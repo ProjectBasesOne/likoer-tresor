@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Likör-Tresor | Flaschen-Code prüfen</title>
+  <style>
+    :root {
+      --bg: #121316;
+      --card: #1e2026;
+      --accent: #d4af37; /* Gold-Ton */
+      --text: #f0f0f0;
+      --muted: #9aa0a6;
+      --warn-bg: #3d2222;
+      --warn-border: #e57373;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; min-height: 100vh; }
+    .container { width: 100%; max-width: 440px; margin-top: 20px; }
+    
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h1 { color: var(--accent); font-size: 1.8rem; letter-spacing: 1px; margin-bottom: 6px; }
+    .header p { color: var(--muted); font-size: 0.9rem; }
+
+    .quote-box {
+      background: rgba(212, 175, 55, 0.08);
+      border-left: 3px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-style: italic;
+      font-size: 0.92rem;
+      color: #e0d8b0;
+    }
+
+    .search-card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .search-card label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 0.95rem; }
+    .input-group { display: flex; gap: 8px; }
+    input {
+      flex: 1;
+      background: #121316;
+      border: 1px solid #3c4043;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      text-align: center;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    button {
+      background: var(--accent);
+      color: #121316;
+      border: none;
+      padding: 0 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover { opacity: 0.9; }
+
+    .result-card {
+      background: var(--card);
+      padding: 22px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .badge {
+      display: inline-block;
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .result-title { font-size: 1.5rem; margin-bottom: 16px; color: #fff; }
+    .info-row { margin-bottom: 12px; font-size: 0.95rem; line-height: 1.4; }
+    .info-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; display: block; margin-bottom: 2px; }
+    
+    .allergen-box {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+    .bottle-quote {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #333;
+      font-style: italic;
+      color: var(--accent);
+      text-align: center;
+    }
+    .insta-btn {
+      display: block;
+      text-align: center;
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      color: #fff;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-top: 18px;
+    }
+    .error-msg { color: #e57373; margin-top: 12px; font-size: 0.9rem; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🥃 HAUSBRENNEREI</h1>
+    <p>Gib deinen Flaschen-Code ein für alle Details</p>
+  </div>
+
+  <!-- Zufälliger Spruch des Tages -->
+  <div class="quote-box" id="dailyQuote"></div>
+
+  <!-- Code-Eingabe -->
+  <div class="search-card">
+    <label for="codeInput">Flaschen-Code auf dem Etikett:</label>
+    <div class="input-group">
+      <input type="text" id="codeInput" placeholder="z. B. WM-01" autocomplete="off">
+      <button onclick="sucheLikoer()">Prüfen</button>
+    </div>
+    <div class="error-msg" id="errorMsg">Code nicht gefunden. Bitte prüfe die Schreibweise (z. B. WM-01).</div>
+  </div>
+
+  <!-- Ergebnis-Anzeige -->
+  <div class="result-card" id="resultCard">
+    <span class="badge" id="resCode"></span>
+    <h2 class="result-title" id="resName"></h2>
+
+    <div class="info-row">
+      <span class="info-label">Alkoholbasis</span>
+      <span id="resBasis"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Zutaten & Geschmack</span>
+      <span id="resZutaten"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Angesetzt / Abfüllung</span>
+      <span id="resDatum"></span>
+    </div>
+
+    <div class="allergen-box" id="resAllergeneBox">
+      <strong>⚠️ Allergene & Hinweise:</strong><br>
+      <span id="resAllergene"></span>
+    </div>
+
+    <div class="bottle-quote" id="resSpruch"></div>
+
+    <a href="#" target="_blank" class="insta-btn" id="resInsta">📸 Auf Instagram ansehen</a>
+  </div>
+</div>
+
+<script>
+  // =========================================================================
+  // 1. HIER DEINEN SICHEREN CSV-LINK AUS GOOGLE SHEETS EINFÜGEN (Optional):
+  // =========================================================================
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjXf2C__O1437EMJ7pt-QIdCzNnaolYBzLOGQ8Chk1mwnuda9y2DW-xWaqRHLNlFVwx9WlXEtZYcIo/pub?output=csv"; // Beispiel: "https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv"
+
+  // =========================================================================
+  // 2. SPRÜCHE DES TAGES (Wird bei jedem Öffnen zufällig ausgewählt)
+  // =========================================================================
+  const spruecheDesTages = [
+    "„Alkohol löst keine Probleme, aber das tut Milch ja auch nicht.“",
+    "„Mit Liebe angesetzt, mit Freunden getrunken.“",
+    "„Keine Termine und leicht einen sitzen!“",
+    "„Handgemacht schmeckt immer eine Nummer besser.“",
+    "„Ein kleines Glas Sonnenschein für gute Gesellschaft.“"
+  ];
+
+  // =========================================================================
+  // 3. STANDARD-DATEN (Dein Mirabellenlikör ist schon direkt eingebaut!)
+  // =========================================================================
+  let likoerDatenbank = [
+    {
+      code: "WM-01",
+      name: "Mirabellenlikör",
+      basis: "Wodka",
+      zutaten: "Wodka, Mirabellen, Zitrone, Vanille, Orangenschalen, Zucker, Süßstoff, brauner Zucker, Vanillearoma",
+      datum: "Vor 12.09.2026",
+      allergene: "Keine deklarationspflichtigen Allergene bekannt",
+      spruch: "Aus dem Garten direkt ins Glas – goldener Genuss pur!",
+      insta: "https://instagram.com"
+    },
+    {
+      code: "W-MI-001",
+      name: "Mirabellenlikör (Edition 001)",
+      basis: "Wodka",
+      zutaten: "Frische Mirabellen, Zitrone, Bourbon-Vanille, Orangenschalen, karamellisierter brauner Zucker",
+      datum: "September 2026",
+      allergene: "Keine deklarationspflichtigen Allergene",
+      spruch: "Aus dem Garten direkt ins Glas – goldener Genuss pur!",
+      insta: "https://instagram.com"
+    },
+    {
+      code: "W-HA-001",
+      name: "Haselnuss-Sahne-Traum",
+      basis: "Wodka",
+      zutaten: "Geröstete Haselnüsse, frische Sahne, feines Karamell",
+      datum: "Oktober 2026",
+      allergene: "Enthält Schalenfrüchte (Haselnüsse) und Milch/Laktose (Sahne)!",
+      spruch: "Flüssiges Nougat für die Seele.",
+      insta: "https://instagram.com"
+    }
+  ];
+
+  // Beim Start zufälligen Spruch des Tages anzeigen
+  document.getElementById("dailyQuote").innerText = 
+    spruecheDesTages[Math.floor(Math.random() * spruecheDesTages.length)];
+
+  // Falls CSV-Link eingetragen ist, Daten live aus Google Sheets laden
+  if (CSV_URL.startsWith("http")) {
+    fetch(CSV_URL)
+      .then(res => res.text())
+      .then(csvText => {
+        const zeilen = csvText.split(/\r?\n/).filter(z => z.trim() !== "");
+        if (zeilen.length > 1) {
+          likoerDatenbank = zeilen.slice(1).map(zeile => {
+            // Einfacher CSV-Parser (achtet auf Anführungszeichen)
+            const spalten = zeile.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || zeile.split(",");
+            const clean = (val) => (val ? val.replace(/^"|"$/g, "").trim() : "");
+            return {
+              code: clean(spalten[0]),
+              name: clean(spalten[1]),
+              basis: clean(spalten[2]),
+              zutaten: clean(spalten[3]),
+              datum: clean(spalten[4]),
+              spruch: clean(spalten[5]),
+              insta: clean(spalten[6]) || "https://instagram.com",
+              allergene: clean(spalten[7]) || "Bitte Etikett beachten / Keine Angabe"
+            };
+          });
+        }
+      })
+      .catch(err => console.warn("Nutze eingebaute Standard-Daten:", err));
+  }
+
+  // Suche ausführen
+  function sucheLikoer() {
+    const eingabe = document.getElementById("codeInput").value.trim().toUpperCase();
+    const treffer = likoerDatenbank.find(l => l.code.toUpperCase() === eingabe);
+    const resultCard = document.getElementById("resultCard");
+    const errorMsg = document.getElementById("errorMsg");
+
+    if (treffer) {
+      errorMsg.style.display = "none";
+      document.getElementById("resCode").innerText = treffer.code;
+      document.getElementById("resName").innerText = treffer.name;
+      document.getElementById("resBasis").innerText = treffer.basis;
+      document.getElementById("resZutaten").innerText = treffer.zutaten;
+      document.getElementById("resDatum").innerText = treffer.datum;
+      document.getElementById("resAllergene").innerText = treffer.allergene;
+      document.getElementById("resSpruch").innerText = "„" + treffer.spruch + "“";
+      
+      const instaBtn = document.getElementById("resInsta");
+      if (treffer.insta && treffer.insta.startsWith("http")) {
+        instaBtn.href = treffer.insta;
+        instaBtn.style.display = "block";
+      } else {
+        instaBtn.style.display = "none";
+      }
+      resultCard.style.display = "block";
+    } else {
+      resultCard.style.display = "none";
+      errorMsg.style.display = "block";
+    }
+  }
+
+  // Auch mit der Enter-Taste suchen
+  document.getElementById("codeInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") sucheLikoer();
+  });
+
+  // Direkt-Link Unterstützung (z. B. deine-seite.de/?code=WM-01 für QR-Codes!)
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlCode = urlParams.get("code");
+  if (urlCode) {
+    document.getElementById("codeInput").value = urlCode;
+    sucheLikoer();
+  }
+</script>
+
+</body>
+</html>1
