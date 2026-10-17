@@ -5,16 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Likör-Tresor | Flaschen-Code prüfen</title>
   <style>
+    /* =========================================================================
+       1. GRUNDLEGENDE FARBEN & STILE (DESIGN-VARIABLEN)
+       ======================================================================== */
     :root {
       --bg: #121316;
       --card: #1e2026;
-      --accent: #d4af37; /* Gold-Ton */
+      --accent: #d4af37; /* Edler Gold-Ton */
       --text: #f0f0f0;
       --muted: #9aa0a6;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; min-height: 100vh; }
-    .container { width: 100%; max-width: 440px; margin-top: 20px; }
+    .container { width: 100%; max-width: 440px; margin-top: 20px; margin-bottom: 40px; }
     
     .header { text-align: center; margin-bottom: 24px; }
     .header h1 { color: var(--accent); font-size: 1.8rem; letter-spacing: 1px; margin-bottom: 6px; }
@@ -41,6 +45,7 @@
     }
     .search-card label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 0.95rem; }
     .input-group { display: flex; gap: 8px; }
+    
     input {
       flex: 1;
       background: #121316;
@@ -55,6 +60,7 @@
       font-weight: bold;
     }
     input:focus { outline: none; border-color: var(--accent); }
+    
     button {
       background: var(--accent);
       color: #121316;
@@ -74,6 +80,7 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
       display: none;
       animation: fadeIn 0.3s ease;
+      margin-bottom: 24px;
     }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     
@@ -101,6 +108,18 @@
       text-align: center;
     }
     .error-msg { color: #e57373; margin-top: 12px; font-size: 0.9rem; display: none; }
+
+    .system-card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .system-card h3 { color: var(--accent); font-size: 1.1rem; margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+    .system-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+    .system-row:last-child { border-bottom: none; }
+    .sys-key { font-family: monospace; color: var(--accent); font-weight: bold; }
+    .sys-val { color: var(--muted); text-align: right; }
   </style>
 </head>
 <body>
@@ -118,10 +137,10 @@
   <div class="search-card">
     <label for="codeInput">Flaschen-Code auf dem Etikett:</label>
     <div class="input-group">
-      <input type="text" id="codeInput" placeholder="z. B. WM-01" autocomplete="off">
+      <input type="text" id="codeInput" placeholder="z. B. WMI-001" autocomplete="off">
       <button onclick="sucheLikoer()">Prüfen</button>
     </div>
-    <div class="error-msg" id="errorMsg">Code nicht gefunden. Bitte prüfe die Schreibweise (z. B. WM-01).</div>
+    <div class="error-msg" id="errorMsg">Code nicht gefunden. Bitte prüfe die Schreibweise (z. B. WMI-001).</div>
   </div>
 
   <!-- Ergebnis-Anzeige -->
@@ -144,11 +163,19 @@
 
     <div class="bottle-quote" id="resSpruch"></div>
   </div>
+
+  <!-- Code-Systematik Erklärung -->
+  <div class="system-card">
+    <h3>📖 Wie ist der Code aufgebaut?</h3>
+    <div id="systemList">
+      <p style="color: var(--muted); font-size: 0.85rem;">Lade Systematik aus der Tabelle...</p>
+    </div>
+  </div>
 </div>
 
 <script>
   // =========================================================================
-  // 1. DEIN CSV-LINK AUS GOOGLE SHEETS
+  // 1. DEIN ÖFFENTLICHER CSV-LINK AUS GOOGLE SHEETS
   // =========================================================================
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjXf2C__O1437EMJ7pt-QIdCzNnaolYBzLOGQ8Chk1mwnuda9y2DW-xWaqRHLNlFVwx9WlXEtZYcIo/pub?output=csv";
 
@@ -163,34 +190,57 @@
     "„Ein kleines Glas Sonnenschein für gute Gesellschaft.“"
   ];
 
-  // =========================================================================
-  // 3. STANDARD-DATEN (Fallback)
-  // =========================================================================
-  let likoerDatenbank = [
-    {
-      code: "WM-01",
-      name: "Mirabellenlikör",
-      basis: "Wodka",
-      zutaten: "Wodka, Mirabellen, Zitrone, Vanille, Orangenschalen, Zucker, Süßstoff, brauner Zucker, Vanillearoma",
-      datum: "Vor 12.09.2026",
-      spruch: "Aus dem Garten direkt ins Glas – goldener Genuss pur!"
-    }
-  ];
+  // Komplett leere Datenbank - wird zu 100% aus Google Sheets befüllt!
+  let likoerDatenbank = [];
 
-  // Beim Start zufälligen Spruch des Tages anzeigen
+  // Spruch des Tages anzeigen
   document.getElementById("dailyQuote").innerText = 
     spruecheDesTages[Math.floor(Math.random() * spruecheDesTages.length)];
 
-  // Falls CSV-Link eingetragen ist, Daten live aus Google Sheets laden
+  // =========================================================================
+  // 3. LIVE-DATEN AUS GOOGLE SHEETS LADEN
+  // =========================================================================
   if (CSV_URL.startsWith("http")) {
     fetch(CSV_URL)
       .then(res => res.text())
       .then(csvText => {
         const zeilen = csvText.split(/\r?\n/).filter(z => z.trim() !== "");
+        
         if (zeilen.length > 1) {
+          let systematikHTML = "";
+          
           likoerDatenbank = zeilen.slice(1).map(zeile => {
-            const spalten = zeile.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || zeile.split(",");
+            // CSV-Parser mit Anführungszeichen-Unterstützung
+            const spalten = [];
+            let inQuotes = false;
+            let currentField = "";
+            for (let i = 0; i < zeile.length; i++) {
+              let char = zeile[i];
+              if (char === '"') {
+                inQuotes = !inQuotes;
+              } else if (char === ',' && !inQuotes) {
+                spalten.push(currentField);
+                currentField = "";
+              } else {
+                currentField += char;
+              }
+            }
+            spalten.push(currentField);
+
             const clean = (val) => (val ? val.replace(/^"|"$/g, "").trim() : "");
+            
+            // Systematik-Spalten auslesen
+            const codeElem = clean(spalten[7]);
+            const sysExpl = clean(spalten[8]);
+            if (codeElem && sysExpl) {
+              systematikHTML += `
+                <div class="system-row">
+                  <span class="sys-key">${codeElem}</span>
+                  <span class="sys-val">${sysExpl}</span>
+                </div>
+              `;
+            }
+
             return {
               code: clean(spalten[0]),
               name: clean(spalten[1]),
@@ -200,12 +250,21 @@
               spruch: clean(spalten[5])
             };
           });
+
+          if (systematikHTML) {
+            document.getElementById("systemList").innerHTML = systematikHTML;
+          } else {
+            document.getElementById("systemList").innerHTML = "<p style='color: var(--muted); font-size: 0.85rem;'>Keine Systematik hinterlegt.</p>";
+          }
+          console.log("Daten erfolgreich aus Google Sheet geladen:", likoerDatenbank);
         }
       })
-      .catch(err => console.warn("Nutze eingebaute Standard-Daten:", err));
+      .catch(err => console.warn("Fehler beim Laden der Google-Tabelle:", err));
   }
 
-  // Suche ausführen
+  // =========================================================================
+  // 4. SUCH-FUNKTION
+  // =========================================================================
   function sucheLikoer() {
     const eingabe = document.getElementById("codeInput").value.trim().toUpperCase();
     const treffer = likoerDatenbank.find(l => l.code.toUpperCase() === eingabe);
@@ -228,17 +287,18 @@
     }
   }
 
-  // Auch mit der Enter-Taste suchen
   document.getElementById("codeInput").addEventListener("keypress", function(e) {
     if (e.key === "Enter") sucheLikoer();
   });
 
-  // Direkt-Link Unterstützung (z. B. seite.de/?code=WM-01)
+  // =========================================================================
+  // 5. DIREKT-LINK / QR-CODE UNTERSTÜTZUNG
+  // =========================================================================
   const urlParams = new URLSearchParams(window.location.search);
   const urlCode = urlParams.get("code");
   if (urlCode) {
     document.getElementById("codeInput").value = urlCode;
-    sucheLikoer();
+    setTimeout(() => sucheLikoer(), 600);
   }
 </script>
 
