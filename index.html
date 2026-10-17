@@ -11,8 +11,6 @@
       --accent: #d4af37; /* Gold-Ton */
       --text: #f0f0f0;
       --muted: #9aa0a6;
-      --warn-bg: #3d2222;
-      --warn-border: #e57373;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; min-height: 100vh; }
@@ -94,14 +92,6 @@
     .info-row { margin-bottom: 12px; font-size: 0.95rem; line-height: 1.4; }
     .info-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; display: block; margin-bottom: 2px; }
     
-    .allergen-box {
-      background: var(--warn-bg);
-      border: 1px solid var(--warn-border);
-      padding: 10px 14px;
-      border-radius: 8px;
-      margin: 16px 0;
-      font-size: 0.9rem;
-    }
     .bottle-quote {
       margin-top: 16px;
       padding-top: 16px;
@@ -109,17 +99,6 @@
       font-style: italic;
       color: var(--accent);
       text-align: center;
-    }
-    .insta-btn {
-      display: block;
-      text-align: center;
-      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-      color: #fff;
-      text-decoration: none;
-      padding: 12px;
-      border-radius: 10px;
-      font-weight: bold;
-      margin-top: 18px;
     }
     .error-msg { color: #e57373; margin-top: 12px; font-size: 0.9rem; display: none; }
   </style>
@@ -163,25 +142,18 @@
       <span id="resDatum"></span>
     </div>
 
-    <div class="allergen-box" id="resAllergeneBox">
-      <strong>⚠️ Allergene & Hinweise:</strong><br>
-      <span id="resAllergene"></span>
-    </div>
-
     <div class="bottle-quote" id="resSpruch"></div>
-
-    <a href="#" target="_blank" class="insta-btn" id="resInsta">📸 Auf Instagram ansehen</a>
   </div>
 </div>
 
 <script>
   // =========================================================================
-  // 1. HIER DEINEN SICHEREN CSV-LINK AUS GOOGLE SHEETS EINFÜGEN (Optional):
+  // 1. DEIN CSV-LINK AUS GOOGLE SHEETS
   // =========================================================================
-  const CSV_URL = ""; // Beispiel: "https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv"
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjXf2C__O1437EMJ7pt-QIdCzNnaolYBzLOGQ8Chk1mwnuda9y2DW-xWaqRHLNlFVwx9WlXEtZYcIo/pub?output=csv";
 
   // =========================================================================
-  // 2. SPRÜCHE DES TAGES (Wird bei jedem Öffnen zufällig ausgewählt)
+  // 2. SPRÜCHE DES TAGES
   // =========================================================================
   const spruecheDesTages = [
     "„Alkohol löst keine Probleme, aber das tut Milch ja auch nicht.“",
@@ -192,7 +164,7 @@
   ];
 
   // =========================================================================
-  // 3. STANDARD-DATEN (Dein Mirabellenlikör ist schon direkt eingebaut!)
+  // 3. STANDARD-DATEN (Fallback)
   // =========================================================================
   let likoerDatenbank = [
     {
@@ -201,29 +173,7 @@
       basis: "Wodka",
       zutaten: "Wodka, Mirabellen, Zitrone, Vanille, Orangenschalen, Zucker, Süßstoff, brauner Zucker, Vanillearoma",
       datum: "Vor 12.09.2026",
-      allergene: "Keine deklarationspflichtigen Allergene bekannt",
-      spruch: "Aus dem Garten direkt ins Glas – goldener Genuss pur!",
-      insta: "https://instagram.com"
-    },
-    {
-      code: "W-MI-001",
-      name: "Mirabellenlikör (Edition 001)",
-      basis: "Wodka",
-      zutaten: "Frische Mirabellen, Zitrone, Bourbon-Vanille, Orangenschalen, karamellisierter brauner Zucker",
-      datum: "September 2026",
-      allergene: "Keine deklarationspflichtigen Allergene",
-      spruch: "Aus dem Garten direkt ins Glas – goldener Genuss pur!",
-      insta: "https://instagram.com"
-    },
-    {
-      code: "W-HA-001",
-      name: "Haselnuss-Sahne-Traum",
-      basis: "Wodka",
-      zutaten: "Geröstete Haselnüsse, frische Sahne, feines Karamell",
-      datum: "Oktober 2026",
-      allergene: "Enthält Schalenfrüchte (Haselnüsse) und Milch/Laktose (Sahne)!",
-      spruch: "Flüssiges Nougat für die Seele.",
-      insta: "https://instagram.com"
+      spruch: "Aus dem Garten direkt ins Glas – goldener Genuss pur!"
     }
   ];
 
@@ -239,7 +189,6 @@
         const zeilen = csvText.split(/\r?\n/).filter(z => z.trim() !== "");
         if (zeilen.length > 1) {
           likoerDatenbank = zeilen.slice(1).map(zeile => {
-            // Einfacher CSV-Parser (achtet auf Anführungszeichen)
             const spalten = zeile.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || zeile.split(",");
             const clean = (val) => (val ? val.replace(/^"|"$/g, "").trim() : "");
             return {
@@ -248,9 +197,7 @@
               basis: clean(spalten[2]),
               zutaten: clean(spalten[3]),
               datum: clean(spalten[4]),
-              spruch: clean(spalten[5]),
-              insta: clean(spalten[6]) || "https://instagram.com",
-              allergene: clean(spalten[7]) || "Bitte Etikett beachten / Keine Angabe"
+              spruch: clean(spalten[5])
             };
           });
         }
@@ -272,16 +219,8 @@
       document.getElementById("resBasis").innerText = treffer.basis;
       document.getElementById("resZutaten").innerText = treffer.zutaten;
       document.getElementById("resDatum").innerText = treffer.datum;
-      document.getElementById("resAllergene").innerText = treffer.allergene;
       document.getElementById("resSpruch").innerText = "„" + treffer.spruch + "“";
       
-      const instaBtn = document.getElementById("resInsta");
-      if (treffer.insta && treffer.insta.startsWith("http")) {
-        instaBtn.href = treffer.insta;
-        instaBtn.style.display = "block";
-      } else {
-        instaBtn.style.display = "none";
-      }
       resultCard.style.display = "block";
     } else {
       resultCard.style.display = "none";
@@ -294,7 +233,7 @@
     if (e.key === "Enter") sucheLikoer();
   });
 
-  // Direkt-Link Unterstützung (z. B. deine-seite.de/?code=WM-01 für QR-Codes!)
+  // Direkt-Link Unterstützung (z. B. seite.de/?code=WM-01)
   const urlParams = new URLSearchParams(window.location.search);
   const urlCode = urlParams.get("code");
   if (urlCode) {
