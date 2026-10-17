@@ -5,15 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Likör-Tresor | Flaschen-Code prüfen</title>
   <style>
-    /* =========================================================================
-       1. GRUNDLEGENDE FARBEN & STILE (DESIGN-VARIABLEN)
-       ======================================================================== */
     :root {
       --bg: #121316;
       --card: #1e2026;
-      --accent: #d4af37; /* Edler Gold-Ton */
+      --accent: #d4af37;
       --text: #f0f0f0;
       --muted: #9aa0a6;
+      --border: #3c4043;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
@@ -35,21 +33,20 @@
       color: #e0d8b0;
     }
 
-    .search-card {
+    .search-card, .result-card, .system-card, .overview-card {
       background: var(--card);
       padding: 20px;
       border-radius: 16px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
       margin-bottom: 24px;
-      text-align: center;
     }
+    .search-card { text-align: center; }
     .search-card label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 0.95rem; }
     .input-group { display: flex; gap: 8px; }
-    
     input {
       flex: 1;
       background: #121316;
-      border: 1px solid #3c4043;
+      border: 1px solid var(--border);
       color: #fff;
       padding: 12px 16px;
       border-radius: 10px;
@@ -60,7 +57,6 @@
       font-weight: bold;
     }
     input:focus { outline: none; border-color: var(--accent); }
-    
     button {
       background: var(--accent);
       color: #121316;
@@ -73,15 +69,7 @@
     }
     button:hover { opacity: 0.9; }
 
-    .result-card {
-      background: var(--card);
-      padding: 22px;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      display: none;
-      animation: fadeIn 0.3s ease;
-      margin-bottom: 24px;
-    }
+    .result-card { display: none; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     
     .badge {
@@ -109,17 +97,43 @@
     }
     .error-msg { color: #e57373; margin-top: 12px; font-size: 0.9rem; display: none; }
 
-    .system-card {
-      background: var(--card);
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    /* Aufklappbare Systematik-Box */
+    details.system-card summary {
+      color: var(--accent);
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      list-style: none;
+      outline: none;
     }
-    .system-card h3 { color: var(--accent); font-size: 1.1rem; margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+    details.system-card summary::-webkit-details-marker { display: none; }
+    details.system-card summary::after { content: " ▼"; font-size: 0.8rem; float: right; transition: transform 0.2s; }
+    details.system-card[open] summary::after { transform: rotate(180deg); }
+    .system-content { margin-top: 14px; border-top: 1px solid #333; padding-top: 10px; }
     .system-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
     .system-row:last-child { border-bottom: none; }
     .sys-key { font-family: monospace; color: var(--accent); font-weight: bold; }
     .sys-val { color: var(--muted); text-align: right; }
+
+    /* Übersicht aller Liköre */
+    .overview-card h3 { color: var(--accent); font-size: 1.1rem; margin-bottom: 12px; }
+    .filter-input { width: 100%; margin-bottom: 14px; text-transform: none; letter-spacing: normal; text-align: left; padding: 10px 14px; font-size: 0.95rem; }
+    .group-header { font-size: 1rem; color: var(--accent); font-weight: bold; margin: 14px 0 6px 0; border-bottom: 1px solid #333; padding-bottom: 2px; }
+    .liqueur-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 8px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .liqueur-item:hover { background: rgba(212, 175, 55, 0.1); }
+    .liq-code { font-family: monospace; font-weight: bold; color: var(--accent); font-size: 0.9rem; }
+    .liq-name { font-size: 0.9rem; color: var(--text); text-align: right; }
+    .overview-msg { color: var(--muted); font-size: 0.85rem; text-align: center; padding: 10px; }
   </style>
 </head>
 <body>
@@ -130,10 +144,8 @@
     <p>Gib deinen Flaschen-Code ein für alle Details</p>
   </div>
 
-  <!-- Zufälliger Spruch des Tages -->
-  <div class="quote-box" id="dailyQuote"></div>
+  <div class="quote-box" id="dailyQuote">Lade Spruch...</div>
 
-  <!-- Code-Eingabe -->
   <div class="search-card">
     <label for="codeInput">Flaschen-Code auf dem Etikett:</label>
     <div class="input-group">
@@ -143,7 +155,6 @@
     <div class="error-msg" id="errorMsg">Code nicht gefunden. Bitte prüfe die Schreibweise (z. B. WMI-001).</div>
   </div>
 
-  <!-- Ergebnis-Anzeige -->
   <div class="result-card" id="resultCard">
     <span class="badge" id="resCode"></span>
     <h2 class="result-title" id="resName"></h2>
@@ -164,24 +175,38 @@
     <div class="bottle-quote" id="resSpruch"></div>
   </div>
 
-  <!-- Code-Systematik Erklärung -->
-  <div class="system-card">
-    <h3>📖 Wie ist der Code aufgebaut?</h3>
-    <div id="systemList">
-      <p style="color: var(--muted); font-size: 0.85rem;">Lade Systematik aus der Tabelle...</p>
+  <!-- Code-Systematik -->
+  <details class="system-card" open>
+    <summary>📖 Wie ist der Code aufgebaut? (Systematik)</summary>
+    <div class="system-content" id="systemList">
+      <div class="system-row">
+        <span class="sys-key">1. Stelle (W)</span>
+        <span class="sys-val">Alkoholbasis (z. B. W = Wodka)</span>
+      </div>
+      <div class="system-row">
+        <span class="sys-key">2.–3. Stelle</span>
+        <span class="sys-val">Frucht / Zutat</span>
+      </div>
+      <div class="system-row">
+        <span class="sys-key">Ziffern (001, 002, ...)</span>
+        <span class="sys-val">Fortlaufende Chargen- / Ansatznummer</span>
+      </div>
+    </div>
+  </details>
+
+  <!-- Übersicht aller Liköre -->
+  <div class="overview-card">
+    <h3>📋 Alle Liköre im Tresor</h3>
+    <input type="text" id="filterInput" class="filter-input" placeholder="Nach Name oder Code filtern..." oninput="filtriereUebersicht()">
+    <div id="overviewList">
+      <p class="overview-msg">Lade Likör-Übersicht...</p>
     </div>
   </div>
 </div>
 
 <script>
-  // =========================================================================
-  // 1. DEIN ÖFFENTLICHER CSV-LINK AUS GOOGLE SHEETS
-  // =========================================================================
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjXf2C__O1437EMJ7pt-QIdCzNnaolYBzLOGQ8Chk1mwnuda9y2DW-xWaqRHLNlFVwx9WlXEtZYcIo/pub?output=csv";
 
-  // =========================================================================
-  // 2. SPRÜCHE DES TAGES
-  // =========================================================================
   const spruecheDesTages = [
     "„Alkohol löst keine Probleme, aber das tut Milch ja auch nicht.“",
     "„Mit Liebe angesetzt, mit Freunden getrunken.“",
@@ -190,27 +215,27 @@
     "„Ein kleines Glas Sonnenschein für gute Gesellschaft.“"
   ];
 
-  // Komplett leere Datenbank - wird zu 100% aus Google Sheets befüllt!
-  let likoerDatenbank = [];
+  // Korrigierte Backup-Daten (alle Eigenschaftsnamen heißen fehlerfrei 'zutaten')
+  let likoerDatenbank = [
+    { code: "WMI-001", name: "Mirabellenlikör", basis: "Wodka", zutaten: "Wodka, Mirabellen, Zitrone, Vanille, Orangenschalen, Zucker, Süßstoff, brauner Zucker, Vanillearoma", datum: "Am 12.09.2026", spruch: "Spruch des Tages: Beim Nachbarn stibitzt, in Wodka versenkt. Karma schmeckt süß und vanillig!" },
+    { code: "WBI-001", name: "Birnenlikör", basis: "Wodka", zutaten: "Wodka, Birne, Zimt, Vanille, Orange, Zitrone", datum: "Am 08.07.2026", spruch: "Spruch des Tages: Wenn dir das Leben Birnen gibt, pack Zimt und Wodka dazu. Birne glüht, Laune blüht!" },
+    { code: "WHI-001", name: "Himbeerlikör", basis: "Wodka", zutaten: "Wodka, Himbeeren, Zitrone, Zimt, Orange, Vanille", datum: "Am 12.08.2026", spruch: "Spruch des Tages: Himbeeren zählen als Obstsalat, also absolut gesundheitsfördernd. Prost auf die Vitamine!" },
+    { code: "WHI-002", name: "Himbeerlikör", basis: "Wodka", zutaten: "Wodka, Himbeeren, Zitrone, Zimt, Orange, Vanille", datum: "Am 18.08.2026", spruch: "Spruch des Tages: Himbeere küsst Zimt und Wodka regelt den Rest. Heute wird beerenstark angestoßen!" }
+  ];
 
-  // Spruch des Tages anzeigen
-  document.getElementById("dailyQuote").innerText = 
-    spruecheDesTages[Math.floor(Math.random() * spruecheDesTages.length)];
+  document.getElementById("dailyQuote").innerText = spruecheDesTages[Math.floor(Math.random() * spruecheDesTages.length)];
 
-  // =========================================================================
-  // 3. LIVE-DATEN AUS GOOGLE SHEETS LADEN
-  // =========================================================================
+  renderUebersicht(likoerDatenbank);
+
   if (CSV_URL.startsWith("http")) {
     fetch(CSV_URL)
       .then(res => res.text())
       .then(csvText => {
         const zeilen = csvText.split(/\r?\n/).filter(z => z.trim() !== "");
-        
         if (zeilen.length > 1) {
-          let systematikHTML = "";
-          
-          likoerDatenbank = zeilen.slice(1).map(zeile => {
-            // CSV-Parser mit Anführungszeichen-Unterstützung
+          let neueDatenbank = [];
+
+          zeilen.slice(1).forEach(zeile => {
             const spalten = [];
             let inQuotes = false;
             let currentField = "";
@@ -229,42 +254,71 @@
 
             const clean = (val) => (val ? val.replace(/^"|"$/g, "").trim() : "");
             
-            // Systematik-Spalten auslesen
-            const codeElem = clean(spalten[7]);
-            const sysExpl = clean(spalten[8]);
-            if (codeElem && sysExpl) {
-              systematikHTML += `
-                <div class="system-row">
-                  <span class="sys-key">${codeElem}</span>
-                  <span class="sys-val">${sysExpl}</span>
-                </div>
-              `;
+            const code = clean(spalten[0]);
+            const name = clean(spalten[1]);
+            if (code && name) {
+              neueDatenbank.push({
+                code: code,
+                name: name,
+                basis: clean(spalten[2]),
+                zutaten: clean(spalten[3]),
+                datum: clean(spalten[4]),
+                spruch: clean(spalten[5])
+              });
             }
-
-            return {
-              code: clean(spalten[0]),
-              name: clean(spalten[1]),
-              basis: clean(spalten[2]),
-              zutaten: clean(spalten[3]),
-              datum: clean(spalten[4]),
-              spruch: clean(spalten[5])
-            };
           });
 
-          if (systematikHTML) {
-            document.getElementById("systemList").innerHTML = systematikHTML;
-          } else {
-            document.getElementById("systemList").innerHTML = "<p style='color: var(--muted); font-size: 0.85rem;'>Keine Systematik hinterlegt.</p>";
+          if (neueDatenbank.length > 0) {
+            likoerDatenbank = neueDatenbank;
+            renderUebersicht(likoerDatenbank);
           }
-          console.log("Daten erfolgreich aus Google Sheet geladen:", likoerDatenbank);
         }
       })
-      .catch(err => console.warn("Fehler beim Laden der Google-Tabelle:", err));
+      .catch(err => {
+        console.log("Live-Abruf im Offline/CORS-Modus übersprungen – Backup-Daten aktiv.");
+      });
   }
 
-  // =========================================================================
-  // 4. SUCH-FUNKTION
-  // =========================================================================
+  function renderUebersicht(daten) {
+    const container = document.getElementById("overviewList");
+    daten.sort((a, b) => a.code.localeCompare(b.code));
+
+    let gruppen = {};
+    daten.forEach(item => {
+      let buchstabe = item.code.charAt(0).toUpperCase() || "?";
+      if (!gruppen[buchstabe]) gruppen[buchstabe] = [];
+      gruppen[buchstabe].push(item);
+    });
+
+    let html = "";
+    Object.keys(gruppen).sort().forEach(buchstabe => {
+      html += `<div class="group-header">${buchstabe}</div>`;
+      gruppen[buchstabe].forEach(liq => {
+        html += `
+          <div class="liqueur-item" onclick="waehleLikoor('${liq.code}')">
+            <span class="liq-code">${liq.code}</span>
+            <span class="liq-name">${liq.name}</span>
+          </div>
+        `;
+      });
+    });
+    container.innerHTML = html;
+  }
+
+  function filtriereUebersicht() {
+    const query = document.getElementById("filterInput").value.toLowerCase();
+    const gefiltert = likoerDatenbank.filter(l => 
+      l.code.toLowerCase().includes(query) || l.name.toLowerCase().includes(query)
+    );
+    renderUebersicht(gefilter);
+  }
+
+  function waehleLikoor(code) {
+    document.getElementById("codeInput").value = code;
+    sucheLikoer();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   function sucheLikoer() {
     const eingabe = document.getElementById("codeInput").value.trim().toUpperCase();
     const treffer = likoerDatenbank.find(l => l.code.toUpperCase() === eingabe);
@@ -278,7 +332,7 @@
       document.getElementById("resBasis").innerText = treffer.basis;
       document.getElementById("resZutaten").innerText = treffer.zutaten;
       document.getElementById("resDatum").innerText = treffer.datum;
-      document.getElementById("resSpruch").innerText = "„" + treffer.spruch + "“";
+      document.getElementById("resSpruch").innerText = treffer.spruch;
       
       resultCard.style.display = "block";
     } else {
@@ -291,14 +345,11 @@
     if (e.key === "Enter") sucheLikoer();
   });
 
-  // =========================================================================
-  // 5. DIREKT-LINK / QR-CODE UNTERSTÜTZUNG
-  // =========================================================================
   const urlParams = new URLSearchParams(window.location.search);
   const urlCode = urlParams.get("code");
   if (urlCode) {
     document.getElementById("codeInput").value = urlCode;
-    setTimeout(() => sucheLikoer(), 600);
+    sucheLikoer();
   }
 </script>
 
