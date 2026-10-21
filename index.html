@@ -2,220 +2,447 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <!-- Sorgt dafür, dass die Seite auf Handys gut aussieht und nicht winzig klein ist -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Likör-Tresor | Flaschen-Code prüfen</title>
+  <title>Likörmanufaktur | Flaschen-Tresor</title>
+  
+  <!-- Hier laden wir schöne Schriftarten von Google Fonts herunter (Cinzel für Überschriften, Plus Jakarta Sans für den Text) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- ==========================================
+       CSS BEREICH: Hier wird das Design definiert 
+       ========================================== -->
   <style>
+    /* In :root legen wir unsere Farbpalette als Variablen an. So müssen wir eine Farbe nur hier ändern, wenn wir sie überall anpassen wollen. */
     :root {
-      --bg: #121316;
-      --card: #1e2026;
-      --accent: #d4af37;
-      --text: #f0f0f0;
-      --muted: #9aa0a6;
-      --border: #3c4043;
+      --bg: #0f1115; /* Ganz dunkler Hintergrund der gesamten Seite */
+      --card-bg: #181a20; /* Hintergrundfarbe der einzelnen Info-Karten */
+      --card-inner: #1f222a; /* Etwas hellerer Hintergrund für innere Bereiche (z.B. Suchfeld) */
+      --accent-gold: #c5a059; /* Die dunklere Haupt-Goldfarbe */
+      --accent-gold-light: #e6ca85; /* Die hellere Goldfarbe für Verläufe und Hover-Effekte */
+      --accent-glow: rgba(197, 160, 89, 0.15); /* Ein leichter goldener Schimmer */
+      --text: #f3f4f6; /* Normale Textfarbe (sehr helles Grau, fast Weiß) */
+      --muted: #9ca3af; /* Gedämpfte Textfarbe für unwichtigere Infos (grau) */
+      --border: rgba(255, 255, 255, 0.08); /* Sehr feine, fast unsichtbare Ränder */
+      --border-gold: rgba(197, 160, 89, 0.35); /* Goldener Rand für besondere Elemente */
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; min-height: 100vh; }
-    .container { width: 100%; max-width: 440px; margin-top: 20px; margin-bottom: 40px; }
+    /* Setzt alle Standard-Abstände des Browsers zurück */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    .header { text-align: center; margin-bottom: 24px; }
-    .header h1 { color: var(--accent); font-size: 1.8rem; letter-spacing: 1px; margin-bottom: 6px; }
-    .header p { color: var(--muted); font-size: 0.9rem; }
+    /* Grundeinstellungen für die ganze Seite */
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center; /* Zentriert alles in der Mitte */
+      padding: 30px 16px; /* Abstand nach oben/unten und zu den Seitenrändern */
+      line-height: 1.5;
+    }
 
-    .quote-box {
-      background: rgba(212, 175, 55, 0.08);
-      border-left: 3px solid var(--accent);
-      padding: 12px 16px;
-      border-radius: 8px;
+    /* Der Container hält den gesamten Inhalt zusammen und sorgt dafür, dass er nicht zu breit wird (max 480px) */
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* ------------------------------------
+       Design für den Kopfbereich (Header)
+       ------------------------------------ */
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .brand-subtitle {
+      font-size: 0.75rem;
+      letter-spacing: 4px; /* Weit auseinanderstehende Buchstaben für den Edellook */
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .header h1 {
+      font-family: 'Cinzel', serif; /* Die schicke Serifenschrift für den Titel */
+      font-size: 2.1rem;
+      color: #fff;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 300;
+    }
+
+    /* ------------------------------------
+       Design für die Spruch-des-Tages-Box
+       ------------------------------------ */
+    .quote-card {
+      background: var(--card-bg);
+      border-left: 3px solid var(--accent-gold); /* Der goldene Strich links */
+      padding: 14px 18px;
+      border-radius: 0 12px 12px 0; /* Nur rechts abgerundet */
       margin-bottom: 24px;
-      font-style: italic;
+      font-style: italic; /* Kursive Schrift */
       font-size: 0.92rem;
-      color: #e0d8b0;
+      color: var(--accent-gold-light);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2); /* Leichter Schatten */
     }
 
-    .search-card, .result-card, .system-card, .overview-card {
-      background: var(--card);
-      padding: 20px;
+    /* ------------------------------------
+       Gemeinsames Design für alle Karten
+       ------------------------------------ */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      margin-bottom: 24px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); /* Lässt die Karte schweben */
     }
-    .search-card { text-align: center; }
-    .search-card label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 0.95rem; }
-    .input-group { display: flex; gap: 8px; }
-    input {
-      flex: 1;
-      background: #121316;
+
+    /* ------------------------------------
+       Design für das Suchfeld (Code-Eingabe)
+       ------------------------------------ */
+    .search-card label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .input-group {
+      display: flex;
+      gap: 10px; /* Abstand zwischen Textfeld und Button */
+    }
+    input[type="text"] {
+      width: 100%;
+      background: var(--card-inner);
       border: 1px solid var(--border);
       color: #fff;
-      padding: 12px 16px;
+      padding: 13px 16px;
       border-radius: 10px;
       font-size: 1.1rem;
-      text-transform: uppercase;
+      font-weight: 600;
+      text-transform: uppercase; /* Verwandelt kleine Buchstaben automatisch in GROßE */
+      letter-spacing: 1.5px;
       text-align: center;
-      letter-spacing: 2px;
-      font-weight: bold;
+      transition: all 0.2s ease; /* Weicher Übergang beim Reinklicken */
     }
-    input:focus { outline: none; border-color: var(--accent); }
-    button {
-      background: var(--accent);
-      color: #121316;
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent-gold); /* Rand wird gold, wenn man reinklickt */
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    button.btn-primary {
+      background: linear-gradient(135deg, var(--accent-gold-light), var(--accent-gold)); /* Goldener Farbverlauf für den Button */
+      color: #111;
       border: none;
-      padding: 0 20px;
+      padding: 0 22px;
       border-radius: 10px;
       font-weight: 700;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      transition: transform 0.15s ease, opacity 0.2s ease;
     }
-    button:hover { opacity: 0.9; }
+    button.btn-primary:hover {
+      opacity: 0.95;
+      transform: translateY(-1px); /* Button geht beim Drüberfahren leicht nach oben */
+    }
+    button.btn-primary:active {
+      transform: translateY(0); /* Beim Klicken geht er wieder runter */
+    }
+    /* Das ist die Fehlermeldung, falls ein Code falsch ist (standardmäßig ausgeblendet: display:none) */
+    .error-msg {
+      color: #f87171;
+      font-size: 0.88rem;
+      margin-top: 10px;
+      display: none;
+    }
 
-    .result-card { display: none; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .badge {
+    /* ------------------------------------
+       Design für die Ergebnis-Karte (gefundener Likör)
+       ------------------------------------ */
+    .result-card {
+      display: none; /* Ist am Anfang unsichtbar, bis etwas gefunden wird */
+      border: 1px solid var(--border-gold);
+      background: radial-gradient(circle at top, rgba(197, 160, 89, 0.08), var(--card-bg) 70%); /* Schicker goldener Lichteffekt von oben */
+      animation: fadeIn 0.35s ease; /* Blendt sich weich ein */
+    }
+    /* Das ist die Animation für das weiche Einblenden der Ergebnisseite */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Das kleine Feld, wo der Code oben links über dem Namen steht */
+    .bottle-tag {
       display: inline-block;
-      background: rgba(212, 175, 55, 0.2);
-      color: var(--accent);
-      padding: 4px 10px;
+      background: var(--accent-glow);
+      color: var(--accent-gold-light);
+      border: 1px solid var(--border-gold);
+      padding: 4px 12px;
       border-radius: 6px;
-      font-family: monospace;
+      font-family: monospace; /* Schreibmaschinen-Schriftart für den Code */
+      font-size: 0.85rem;
       font-weight: bold;
-      font-size: 0.9rem;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-    .result-title { font-size: 1.5rem; margin-bottom: 16px; color: #fff; }
-    .info-row { margin-bottom: 12px; font-size: 0.95rem; line-height: 1.4; }
-    .info-label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; display: block; margin-bottom: 2px; }
-    
-    .bottle-quote {
-      margin-top: 16px;
+    /* Der große Name des Likörs */
+    .result-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.7rem;
+      color: #fff;
+      margin-bottom: 18px;
+    }
+    /* Das Gitter für Alkoholbasis, Zutaten und Datum */
+    .data-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    /* Die einzelnen Zeilen für die Eigenschaften */
+    .data-row {
+      background: var(--card-inner);
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    /* Beschriftung (z.B. "Alkoholbasis") */
+    .data-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-gold);
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    /* Der eigentliche Wert (z.B. "Wodka") */
+    .data-value {
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    /* Design für den individuellen Spruch unter dem Likör */
+    .bottle-spruch {
+      margin-top: 18px;
       padding-top: 16px;
-      border-top: 1px solid #333;
+      border-top: 1px dashed var(--border-gold);
       font-style: italic;
-      color: var(--accent);
+      color: var(--accent-gold-light);
       text-align: center;
+      font-size: 0.95rem;
     }
-    .error-msg { color: #e57373; margin-top: 12px; font-size: 0.9rem; display: none; }
 
-    /* Aufklappbare Systematik-Box */
+    /* ------------------------------------
+       Design für die Klappbox (Systematik)
+       ------------------------------------ */
     details.system-card summary {
-      color: var(--accent);
-      font-size: 1.1rem;
-      font-weight: bold;
+      color: var(--accent-gold);
+      font-size: 1.05rem;
+      font-weight: 600;
       cursor: pointer;
-      list-style: none;
-      outline: none;
+      list-style: none; /* Versteckt den Standard-Pfeil des Browsers */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+    /* Entfernt spezielle Standard-Pfeile bei Apple-Geräten */
     details.system-card summary::-webkit-details-marker { display: none; }
-    details.system-card summary::after { content: " ▼"; font-size: 0.8rem; float: right; transition: transform 0.2s; }
-    details.system-card[open] summary::after { transform: rotate(180deg); }
-    .system-content { margin-top: 14px; border-top: 1px solid #333; padding-top: 10px; }
-    .system-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+    /* Fügt unseren eigenen Pfeil hinzu */
+    details.system-card summary::after {
+      content: "▾";
+      font-size: 1.2rem;
+      transition: transform 0.25s ease;
+    }
+    /* Dreht den Pfeil nach oben, wenn die Box aufgeklappt wird */
+    details.system-card[open] summary::after {
+      transform: rotate(180deg);
+    }
+    .system-content {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .system-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.9rem;
+    }
     .system-row:last-child { border-bottom: none; }
-    .sys-key { font-family: monospace; color: var(--accent); font-weight: bold; }
+    .sys-key { font-family: monospace; font-weight: bold; color: var(--accent-gold-light); }
     .sys-val { color: var(--muted); text-align: right; }
 
-    /* Übersicht aller Liköre */
-    .overview-card h3 { color: var(--accent); font-size: 1.1rem; margin-bottom: 12px; }
-    .filter-input { width: 100%; margin-bottom: 14px; text-transform: none; letter-spacing: normal; text-align: left; padding: 10px 14px; font-size: 0.95rem; }
-    .group-header { font-size: 1rem; color: var(--accent); font-weight: bold; margin: 14px 0 6px 0; border-bottom: 1px solid #333; padding-bottom: 2px; }
+    /* ------------------------------------
+       Design für die Übersicht aller Liköre unten
+       ------------------------------------ */
+    .overview-card h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      margin-bottom: 14px;
+      color: #fff;
+    }
+    /* Suchfeld in der Übersicht */
+    .filter-input {
+      text-align: left !important;
+      letter-spacing: normal !important;
+      font-weight: normal !important;
+      font-size: 0.95rem !important;
+      margin-bottom: 14px;
+      text-transform: none !important;
+    }
+    /* Überschrift für die Kategorien (KATEGORIE W etc.) */
+    .group-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      letter-spacing: 1.5px;
+      margin: 16px 0 6px 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+    }
+    /* Einzelner Likör in der Liste (klickbar) */
     .liqueur-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 10px;
-      background: rgba(255,255,255,0.02);
+      padding: 10px 14px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      margin-bottom: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
+      margin-bottom: 8px;
+      cursor: pointer; /* Zeigt die Hand (Klick) an */
+      transition: all 0.2s ease;
     }
-    .liqueur-item:hover { background: rgba(212, 175, 55, 0.1); }
-    .liq-code { font-family: monospace; font-weight: bold; color: var(--accent); font-size: 0.9rem; }
-    .liq-name { font-size: 0.9rem; color: var(--text); text-align: right; }
-    .overview-msg { color: var(--muted); font-size: 0.85rem; text-align: center; padding: 10px; }
+    /* Wenn man mit der Maus drüberfährt, leuchtet es und rutscht leicht nach rechts */
+    .liqueur-item:hover {
+      background: var(--accent-glow);
+      border-color: var(--border-gold);
+      transform: translateX(3px);
+    }
+    .liq-code { font-family: monospace; font-weight: 700; color: var(--accent-gold); font-size: 0.95rem; }
+    .liq-name { font-size: 0.92rem; color: #fff; text-align: right; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="header">
-    <h1>🥃 HAUSBRENNEREI</h1>
-    <p>Gib deinen Flaschen-Code ein für alle Details</p>
-  </div>
+  
+  <!-- ==========================================
+       HTML BEREICH: Struktur der Webseite
+       ========================================== -->
+       
+  <!-- Manufaktur-Header (Das Logo/Die Überschrift ganz oben) -->
+  <header class="header">
+    <span class="brand-subtitle">Edle Brände & Liköre</span>
+    <h1>LIKÖRMANUFAKTUR</h1>
+    <p>Authentischer Genuss & Transparenz im Flaschen-Tresor</p>
+  </header>
 
-  <div class="quote-box" id="dailyQuote">Lade Spruch...</div>
+  <!-- Spruch des Tages: Hier wird von JavaScript später ein zufälliger Spruch reingeschrieben -->
+  <div class="quote-card" id="dailyQuote">Lade Manufaktur-Spruch...</div>
 
-  <div class="search-card">
-    <label for="codeInput">Flaschen-Code auf dem Etikett:</label>
+  <!-- Sucheingabe: Hier gibt der Nutzer den Code ein -->
+  <div class="card search-card">
+    <label for="codeInput">Flaschen-Code eingeben</label>
     <div class="input-group">
-      <input type="text" id="codeInput" placeholder="z. B. WMI-001" autocomplete="off">
-      <button onclick="sucheLikoer()">Prüfen</button>
+      <!-- autocomplete="off" verhindert, dass der Browser alte Eingaben nervig drüberlegt -->
+      <input type="text" id="codeInput" placeholder="Z. B. WMI-001" autocomplete="off">
+      <button class="btn-primary" onclick="sucheLikoer()">Prüfen</button>
     </div>
-    <div class="error-msg" id="errorMsg">Code nicht gefunden. Bitte prüfe die Schreibweise (z. B. WMI-001).</div>
+    <!-- Wird nur eingeblendet, wenn das JavaScript den Code nicht findet -->
+    <div class="error-msg" id="errorMsg">Dieser Code wurde im Tresor nicht gefunden. Bitte überprüfe die Schreibweise (z. B. WMI-001).</div>
   </div>
 
-  <div class="result-card" id="resultCard">
-    <span class="badge" id="resCode"></span>
-    <h2 class="result-title" id="resName"></h2>
+  <!-- Gefundener Likör (Ergebnis-Karte): Bleibt unsichtbar, bis 'sucheLikoer()' aufgerufen wird -->
+  <div class="card result-card" id="resultCard">
+    <span class="bottle-tag" id="resCode"></span> <!-- Z.B. WMI-001 -->
+    <h2 class="result-title" id="resName"></h2> <!-- Z.B. Mirabellenlikör -->
 
-    <div class="info-row">
-      <span class="info-label">Alkoholbasis</span>
-      <span id="resBasis"></span>
-    </div>
-    <div class="info-row">
-      <span class="info-label">Zutaten & Geschmack</span>
-      <span id="resZutaten"></span>
-    </div>
-    <div class="info-row">
-      <span class="info-label">Angesetzt / Abfüllung</span>
-      <span id="resDatum"></span>
+    <div class="data-grid">
+      <!-- Alkoholbasis Info -->
+      <div class="data-row">
+        <div class="data-label">Alkoholbasis</div>
+        <div class="data-value" id="resBasis"></div>
+      </div>
+      <!-- Zutaten Info -->
+      <div class="data-row">
+        <div class="data-label">Zutaten & Auszug</div>
+        <div class="data-value" id="resZutaten"></div>
+      </div>
+      <!-- Datum Info -->
+      <div class="data-row">
+        <div class="data-label">Ansatz / Reifung</div>
+        <div class="data-value" id="resDatum"></div>
+      </div>
     </div>
 
-    <div class="bottle-quote" id="resSpruch"></div>
+    <!-- Individueller Flaschenspruch aus der Excel-Liste -->
+    <div class="bottle-spruch" id="resSpruch"></div>
   </div>
 
-  <!-- Code-Systematik -->
-  <details class="system-card" open>
-    <summary>📖 Wie ist der Code aufgebaut? (Systematik)</summary>
-    <div class="system-content" id="systemList">
+  <!-- Systematik (Klappbox): Die Erklärung, wie dein Code-System funktioniert -->
+  <details class="card system-card">
+    <summary>📖 Flaschen-Code Systematik</summary>
+    <div class="system-content">
       <div class="system-row">
-        <span class="sys-key">1. Stelle (W)</span>
+        <span class="sys-key">1. Stelle (z. B. W)</span>
         <span class="sys-val">Alkoholbasis (z. B. W = Wodka)</span>
       </div>
       <div class="system-row">
         <span class="sys-key">2.–3. Stelle</span>
-        <span class="sys-val">Frucht / Zutat</span>
+        <span class="sys-val">
+          Frucht: Einzelfrucht (z. B. <strong>BI</strong> = Birne) oder Kombination (z. B. <strong>HB</strong> = Himbeere & Birne)
+        </span>
       </div>
       <div class="system-row">
         <span class="sys-key">Ziffern (001, 002, ...)</span>
-        <span class="sys-val">Fortlaufende Chargen- / Ansatznummer</span>
+        <span class="sys-val">Fortlaufende Ansatznummer</span>
       </div>
     </div>
   </details>
 
-  <!-- Übersicht aller Liköre -->
-  <div class="overview-card">
-    <h3>📋 Alle Liköre im Tresor</h3>
-    <input type="text" id="filterInput" class="filter-input" placeholder="Nach Name oder Code filtern..." oninput="filtriereUebersicht()">
+  <!-- Sortimentsübersicht: Hier wird per JavaScript die Liste aller Liköre eingefügt -->
+  <div class="card overview-card">
+    <h3>📋 Sortiment im Tresor</h3>
+    <!-- Ein kleines Extra-Suchfeld, um in der Liste zu filtern -->
+    <input type="text" id="filterInput" class="filter-input" placeholder="Nach Sorte oder Code filtern..." oninput="filtriereUebersicht()">
+    <!-- Der Container für die Liste -->
     <div id="overviewList">
-      <p class="overview-msg">Lade Likör-Übersicht...</p>
+      <p style="text-align:center; color: var(--muted); font-size: 0.9rem;">Lade Likör-Register...</p>
     </div>
   </div>
 </div>
 
+  <!-- ==========================================
+       JAVASCRIPT BEREICH: Logik & Google Sheets Anbindung
+       ========================================== -->
 <script>
+  // Dies ist der Link zu deiner veröffentlichten Google Tabelle im CSV-Format.
+  // Hier zieht das Skript live die aktuellen Daten raus.
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjXf2C__O1437EMJ7pt-QIdCzNnaolYBzLOGQ8Chk1mwnuda9y2DW-xWaqRHLNlFVwx9WlXEtZYcIo/pub?output=csv";
 
+  // Ein paar allgemeine Sprüche, von denen bei jedem Seitenaufruf einer zufällig ausgewählt wird.
   const spruecheDesTages = [
     "„Alkohol löst keine Probleme, aber das tut Milch ja auch nicht.“",
-    "„Mit Liebe angesetzt, mit Freunden getrunken.“",
+    "„Mit Leidenschaft destilliert, mit Freunden genossen.“",
     "„Keine Termine und leicht einen sitzen!“",
-    "„Handgemacht schmeckt immer eine Nummer besser.“",
-    "„Ein kleines Glas Sonnenschein für gute Gesellschaft.“"
+    "„Handgemacht schmeckt einfach eine Liga besser.“",
+    "„Ein feiner Tropfen für die besten Momente.“"
   ];
 
-  // Korrigierte Backup-Daten (alle Eigenschaftsnamen heißen fehlerfrei 'zutaten')
+  // Lokale Daten als Backup (Sicherheitsschicht). 
+  // Falls jemand auf der Webseite ist und gerade kein Internet hat oder Google blockiert ist, 
+  // stürzt die Seite nicht ab, sondern zeigt diese "Notfall-Daten".
   let likoerDatenbank = [
     { code: "WMI-001", name: "Mirabellenlikör", basis: "Wodka", zutaten: "Wodka, Mirabellen, Zitrone, Vanille, Orangenschalen, Zucker, Süßstoff, brauner Zucker, Vanillearoma", datum: "Am 12.09.2026", spruch: "Spruch des Tages: Beim Nachbarn stibitzt, in Wodka versenkt. Karma schmeckt süß und vanillig!" },
     { code: "WBI-001", name: "Birnenlikör", basis: "Wodka", zutaten: "Wodka, Birne, Zimt, Vanille, Orange, Zitrone", datum: "Am 08.07.2026", spruch: "Spruch des Tages: Wenn dir das Leben Birnen gibt, pack Zimt und Wodka dazu. Birne glüht, Laune blüht!" },
@@ -223,39 +450,58 @@
     { code: "WHI-002", name: "Himbeerlikör", basis: "Wodka", zutaten: "Wodka, Himbeeren, Zitrone, Zimt, Orange, Vanille", datum: "Am 18.08.2026", spruch: "Spruch des Tages: Himbeere küsst Zimt und Wodka regelt den Rest. Heute wird beerenstark angestoßen!" }
   ];
 
+  // Setzt den zufälligen Spruch ganz oben auf der Seite ein
+  // Math.random() sucht eine zufällige Kommazahl, Math.floor rundet sie ab, so erhalten wir eine zufällige Position in unserer Liste.
   document.getElementById("dailyQuote").innerText = spruecheDesTages[Math.floor(Math.random() * spruecheDesTages.length)];
-
+  
+  // Zuerst bauen wir die Übersichts-Liste mit unseren Backup-Daten (damit schonmal was da ist).
   renderUebersicht(likoerDatenbank);
 
+  // === LIVE-SYNCHRONISATION MIT GOOGLE SHEETS ===
+  // Hier wird geprüft, ob ein echter Internetlink vorhanden ist
   if (CSV_URL.startsWith("http")) {
+    
+    // fetch() ist der Befehl, um Dateien aus dem Internet herunterzuladen
     fetch(CSV_URL)
-      .then(res => res.text())
+      .then(res => res.text()) // Wandle die empfangene Datei in reinen Text um
       .then(csvText => {
+        // Trennt den langen Textblock in einzelne Zeilen (jede Zeile = ein Likör in Excel)
         const zeilen = csvText.split(/\r?\n/).filter(z => z.trim() !== "");
+        
+        // Überprüft, ob es überhaupt Zeilen gibt (mehr als 1, weil Zeile 1 ja nur die Überschriften der Tabelle sind)
         if (zeilen.length > 1) {
-          let neueDatenbank = [];
-
+          let neueDatenbank = []; // Hier speichern wir gleich die frischen Daten rein
+          
+          // Wir überspringen Zeile 1 (.slice(1)) und gehen jede andere Zeile einzeln durch
           zeilen.slice(1).forEach(zeile => {
-            const spalten = [];
-            let inQuotes = false;
+            const spalten = []; // Hier sammeln wir die Spalten einer Zeile
+            let inQuotes = false; // "inQuotes" (in Anführungszeichen) ist ein Trick, falls mal ein Komma IM Text steht
             let currentField = "";
+            
+            // Wir lesen jedes Zeichen der Zeile einzeln
             for (let i = 0; i < zeile.length; i++) {
               let char = zeile[i];
-              if (char === '"') {
-                inQuotes = !inQuotes;
-              } else if (char === ',' && !inQuotes) {
+              // Wenn das Zeichen ein Anführungszeichen ist, markieren wir, dass wir jetzt IN einem Text sind
+              if (char === '"') inQuotes = !inQuotes;
+              // Wenn es ein Komma ist UND wir nicht in Anführungszeichen sind, ist es die Trennung zur nächsten Spalte
+              else if (char === ',' && !inQuotes) {
                 spalten.push(currentField);
-                currentField = "";
+                currentField = ""; // Aktuelles Feld wieder leer machen für die nächste Spalte
               } else {
+                // Ansonsten fügen wir den Buchstaben dem aktuellen Feld hinzu
                 currentField += char;
               }
             }
-            spalten.push(currentField);
+            spalten.push(currentField); // Den letzten Rest auch als Spalte abspeichern
 
+            // Diese kleine Hilfsfunktion entfernt störende Anführungszeichen am Anfang und Ende des Textes
             const clean = (val) => (val ? val.replace(/^"|"$/g, "").trim() : "");
             
+            // Jetzt holen wir uns die Werte aus den Spalten in der exakten Reihenfolge deiner Excel Tabelle (0 ist die 1. Spalte, 1 ist die 2. Spalte usw.)
             const code = clean(spalten[0]);
             const name = clean(spalten[1]);
+            
+            // Wenn Code und Name ausgefüllt sind (es also keine leere Zeile ist), fügen wir es der Datenbank hinzu
             if (code && name) {
               neueDatenbank.push({
                 code: code,
@@ -268,32 +514,45 @@
             }
           });
 
+          // Wenn wir erfolgreich Daten gezogen haben, ersetzen wir unsere Backup-Daten durch die echten Live-Daten!
           if (neueDatenbank.length > 0) {
             likoerDatenbank = neueDatenbank;
-            renderUebersicht(likoerDatenbank);
+            renderUebersicht(likoerDatenbank); // Liste nochmal neu zeichnen mit den echten Daten
           }
         }
       })
       .catch(err => {
-        console.log("Live-Abruf im Offline/CORS-Modus übersprungen – Backup-Daten aktiv.");
+        // Falls was schief geht (kein Internet), zeige eine Meldung im Hintergrund-Protokoll, aber zeig dem Nutzer einfach die Backup-Daten.
+        console.log("Offline- oder CORS-Modus: Backup-Daten aktiv.");
       });
   }
 
+  // === FUNKTION: BAUT DIE LISTE ALLER LIKÖRE UNTEN ===
   function renderUebersicht(daten) {
     const container = document.getElementById("overviewList");
+    
+    // Sortiert die Daten alphabetisch nach dem Code (A-Z)
     daten.sort((a, b) => a.code.localeCompare(b.code));
 
     let gruppen = {};
+    
+    // Gruppiert alle Liköre nach dem 1. Buchstaben (W für Wodka, K für Korn etc.)
     daten.forEach(item => {
       let buchstabe = item.code.charAt(0).toUpperCase() || "?";
-      if (!gruppen[buchstabe]) gruppen[buchstabe] = [];
-      gruppen[buchstabe].push(item);
+      if (!gruppen[buchstabe]) gruppen[buchstabe] = []; // Neue Gruppe erstellen, falls sie nicht existiert
+      gruppen[buchstabe].push(item); // Likör in die Gruppe schieben
     });
 
     let html = "";
+    
+    // Baut für jede Gruppe den entsprechenden HTML-Code auf
     Object.keys(gruppen).sort().forEach(buchstabe => {
-      html += `<div class="group-header">${buchstabe}</div>`;
+      // Fügt eine Zwischenüberschrift ein, z.B. "KATEGORIE W"
+      html += `<div class="group-header">KATEGORIE ${buchstabe}</div>`;
+      
+      // Geht jeden Likör in dieser Kategorie durch
       gruppen[buchstabe].forEach(liq => {
+        // Wenn man draufklickt, wird die Funktion 'waehleLikoor' mit dem entsprechenden Code gestartet
         html += `
           <div class="liqueur-item" onclick="waehleLikoor('${liq.code}')">
             <span class="liq-code">${liq.code}</span>
@@ -302,54 +561,81 @@
         `;
       });
     });
+    
+    // Setzt den fertigen Code in unseren Übersichtsbereich auf der Seite ein
     container.innerHTML = html;
   }
 
+  // === FUNKTION: FILTER/SUCHE INNERHALB DER ÜBERSICHTS-LISTE ===
   function filtriereUebersicht() {
+    // Holt sich den Text aus dem kleinen Suchfeld
     const query = document.getElementById("filterInput").value.toLowerCase();
+    
+    // Filtern: Sucht, ob der eingegebene Text im Code ODER im Namen vorkommt
     const gefiltert = likoerDatenbank.filter(l => 
       l.code.toLowerCase().includes(query) || l.name.toLowerCase().includes(query)
     );
-    renderUebersicht(gefilter);
+    
+    // Zeichnet die Liste mit den gefilterten Daten neu
+    renderUebersicht(gefiltert);
   }
 
+  // === FUNKTION: WIRD AUFGERUFEN, WENN MAN AUF EINEN LIKÖR IN DER LISTE KLICKT ===
   function waehleLikoor(code) {
+    // Schreibt den angeklickten Code in das große Suchfeld oben
     document.getElementById("codeInput").value = code;
+    // Führt die eigentliche Haupt-Suche aus
     sucheLikoer();
+    // Scrollt weich wieder nach ganz oben zur Karte
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // === HAUPTFUNKTION: PRÜFT DEN CODE UND ZEIGT DAS ERGEBNIS ===
   function sucheLikoer() {
+    // Holt sich die Eingabe, löscht Leerzeichen davor/danach (.trim) und macht alles zu Großbuchstaben (.toUpperCase)
     const eingabe = document.getElementById("codeInput").value.trim().toUpperCase();
+    
+    // Sucht in der Datenbank nach einem Likör, dessen Code exakt zur Eingabe passt
     const treffer = likoerDatenbank.find(l => l.code.toUpperCase() === eingabe);
+    
+    // Holt sich die HTML-Container für die Ergebniskarte und die Fehlermeldung
     const resultCard = document.getElementById("resultCard");
     const errorMsg = document.getElementById("errorMsg");
 
-    if (treffer) {
-      errorMsg.style.display = "none";
+    if (treffer) { // Wenn der Likör gefunden wurde:
+      errorMsg.style.display = "none"; // Verstecke die Fehlermeldung
+      
+      // Befülle die einzelnen Bereiche der Karte mit den Daten aus der Excel
       document.getElementById("resCode").innerText = treffer.code;
       document.getElementById("resName").innerText = treffer.name;
-      document.getElementById("resBasis").innerText = treffer.basis;
-      document.getElementById("resZutaten").innerText = treffer.zutaten;
-      document.getElementById("resDatum").innerText = treffer.datum;
-      document.getElementById("resSpruch").innerText = treffer.spruch;
+      // "|| '—'" bedeutet: Wenn z.B. kein Datum hinterlegt ist, zeige einfach einen Strich ('—') statt eines Fehlers.
+      document.getElementById("resBasis").innerText = treffer.basis || "—";
+      document.getElementById("resZutaten").innerText = treffer.zutaten || "—";
+      document.getElementById("resDatum").innerText = treffer.datum || "—";
+      document.getElementById("resSpruch").innerText = treffer.spruch || "";
       
+      // Mache die Ergebnis-Karte sichtbar (block)
       resultCard.style.display = "block";
-    } else {
-      resultCard.style.display = "none";
-      errorMsg.style.display = "block";
+    } else { // Wenn der Code NICHT gefunden wurde:
+      resultCard.style.display = "none"; // Verstecke die Ergebnis-Karte (falls noch eine offene da war)
+      errorMsg.style.display = "block"; // Zeige stattdessen den roten Fehlertext
     }
   }
 
+  // === ZUSATZFUNKTION: "ENTER" TASTE ===
+  // Erlaubt es, nach der Eingabe einfach "Enter" auf der Tastatur zu drücken, statt auf den Button zu klicken
   document.getElementById("codeInput").addEventListener("keypress", function(e) {
     if (e.key === "Enter") sucheLikoer();
   });
 
+  // === ZUSATZFUNKTION: QR-CODE DIREKTLINK ===
+  // Wenn jemand einen Link wie "meinewebseite.de/?code=WMI-001" öffnet (z.B. durch Scannen eines QR-Codes)
+  // dann liest dieser Teil das "WMI-001" aus der URL aus und sucht direkt danach.
   const urlParams = new URLSearchParams(window.location.search);
   const urlCode = urlParams.get("code");
   if (urlCode) {
-    document.getElementById("codeInput").value = urlCode;
-    sucheLikoer();
+    document.getElementById("codeInput").value = urlCode; // Schreibt es ins Textfeld
+    sucheLikoer(); // Startet die Suche
   }
 </script>
 
