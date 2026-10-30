@@ -1,3 +1,8 @@
+Hier ist der komplette, aktualisierte und sichere Code für deine GitHub-Datei (`index.html`).
+
+Ich habe den neuen, sicheren Google-Sheets-Link (`CSV_URL`) eingefügt und die Sicherheitslücke (XSS) in der Übersicht geschlossen. Du kannst diesen Code genau so kopieren und in dein GitHub-Repository einfügen:
+
+```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -206,7 +211,7 @@
 </div>
 
 <script>
-  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjXf2C__O1437EMJ7pt-QIdCzNnaolYBzLOGQ8Chk1mwnuda9y2DW-xWaqRHLNlFVwx9WlXEtZYcIo/pub?output=csv";
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjXf2C__O1437EMJ7pt-QIdCzNnaolYBzLOGQ8Chk1mwnuda9y2DW-xWaqRHLNlFVwx9WlXEtZYcIo/pub?gid=1287595683&single=true&output=csv";
 
   const spruecheDesTages = [
     "„Eigentlich wollte ich heute nichts trinken aber dann fiel mir ein dass ich nicht eigentlich bin.“",
@@ -323,8 +328,10 @@
       });
   }
 
+  // Die neue, XSS-sichere Render-Funktion
   function renderUebersicht(daten) {
     const container = document.getElementById("overviewList");
+    
     // Wenn die Liste durch eine Suche leer gefiltert wird
     if(daten.length === 0) {
       container.innerHTML = `<p style="text-align:center; color: var(--muted); padding: 10px;">Keine passenden Liköre gefunden.</p>`;
@@ -339,19 +346,32 @@
       gruppen[buchstabe].push(item);
     });
 
-    let html = "";
+    container.innerHTML = ""; // Container sicher leeren
+    
     Object.keys(gruppen).sort().forEach(buchstabe => {
-      html += `<div class="group-header">KATEGORIE ${buchstabe}</div>`;
+      const header = document.createElement("div");
+      header.className = "group-header";
+      header.textContent = `KATEGORIE ${buchstabe}`;
+      container.appendChild(header);
+
       gruppen[buchstabe].forEach(liq => {
-        html += `
-          <div class="liqueur-item" onclick="waehleLikoor('${liq.code}')">
-            <span class="liq-code">${liq.code}</span>
-            <span class="liq-name">${liq.name}</span>
-          </div>
-        `;
+        const item = document.createElement("div");
+        item.className = "liqueur-item";
+        item.addEventListener("click", () => waehleLikoor(liq.code));
+
+        const codeSpan = document.createElement("span");
+        codeSpan.className = "liq-code";
+        codeSpan.textContent = liq.code;
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "liq-name";
+        nameSpan.textContent = liq.name;
+
+        item.appendChild(codeSpan);
+        item.appendChild(nameSpan);
+        container.appendChild(item);
       });
     });
-    container.innerHTML = html;
   }
 
   function filtriereUebersicht() {
@@ -416,3 +436,5 @@
 
 </body>
 </html>
+
+```
