@@ -158,9 +158,8 @@
 <body>
 
 <div class="container">
-  
   <header class="header">
-    <span class="brand-subtitle">Edle Brände & Liköre</span>
+    <span class="brand-subtitle">Edle Liköre</span>
     <h1>LIKÖRMANUFAKTUR</h1>
     <p>Authentischer Genuss & Transparenz im Flaschen-Tresor</p>
   </header>
@@ -317,17 +316,15 @@
         }
       })
       .catch(err => {
-        // HIER passiert die Magie: Wenn kein Internet da ist, wird der Fehlerbereich geladen
         console.error("Fehler beim Laden der Likördaten:", err);
         zeigeVerbindungsFehler();
       });
   }
 
-  // Die neue, XSS-sichere Render-Funktion
+  // XSS-sichere Render-Funktion
   function renderUebersicht(daten) {
     const container = document.getElementById("overviewList");
     
-    // Wenn die Liste durch eine Suche leer gefiltert wird
     if(daten.length === 0) {
       container.innerHTML = `<p style="text-align:center; color: var(--muted); padding: 10px;">Keine passenden Liköre gefunden.</p>`;
       return;
@@ -388,7 +385,6 @@
     const resultCard = document.getElementById("resultCard");
     const errorMsg = document.getElementById("errorMsg");
 
-    // Prüfen, ob die Datenbank überhaupt geladen wurde
     if (likoerDatenbank.length === 0) {
       resultCard.style.display = "none";
       errorMsg.innerText = "Das Likör-Register konnte noch nicht geladen werden. Bitte versuche es später.";
@@ -421,7 +417,6 @@
   const urlParams = new URLSearchParams(window.location.search);
   const urlCode = urlParams.get("code");
   if (urlCode) {
-    // Kurze Verzögerung, damit die Live-Daten erst laden können, falls man per QR-Code kommt
     setTimeout(() => {
       document.getElementById("codeInput").value = urlCode;
       sucheLikoer();
@@ -431,5 +426,3 @@
 
 </body>
 </html>
-
-```
