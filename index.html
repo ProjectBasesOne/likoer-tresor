@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 
+  <!-- QR-Codes werden lokal im Browser berechnet; die Bibliothek ist fest versioniert. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
     :root {
       --bg: #0f1115;
@@ -164,6 +166,34 @@
     .input-group input { min-width:0; }
     @media (max-width:360px) { .header h1 {font-size:1.55rem;} .card {padding:16px;} button.btn-primary {padding:0 12px;} }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after {animation:none!important;transition:none!important;scroll-behavior:auto!important;} }
+    /* Verfeinerter Manufaktur-Stil: kompakte Statistik, klare Karten und flexible Zutatenliste. */
+    body { background: radial-gradient(ellipse at top, #282218 0, var(--bg) 440px); }
+    .container { max-width: 540px; }
+    .header { padding: 22px 0 18px; border-bottom: 1px solid var(--border-gold); }
+    .header h1 { color: var(--accent-gold-light); font-size: clamp(1.45rem, 6vw, 2.1rem); }
+    .stats > div { display:flex; align-items:center; justify-content:center; gap:10px; padding:9px 16px; }
+    .stats strong { font-size:1.2rem; }
+    .stats span { font-size:.9rem; }
+    .card { box-shadow:0 8px 24px #0004; }
+    .data-row { padding:14px; }
+    .ingredient-list { list-style:none; display:flex; flex-wrap:wrap; gap:7px; margin-top:8px; }
+    .ingredient-list li { padding:5px 10px; border:1px solid var(--border-gold); border-radius:7px; background:var(--accent-glow); overflow-wrap:anywhere; max-width:100%; }
+    .share-btn { cursor:pointer; }
+    .qr-panel { margin-top:16px; padding-top:14px; border-top:1px solid var(--border-gold); }
+    .qr-panel summary { cursor:pointer; color:var(--accent-gold-light); font-weight:600; }
+    .qr-body { text-align:center; margin-top:14px; }
+    .qr-body p { font-size:.85rem; color:var(--muted); margin:10px 0; overflow-wrap:anywhere; }
+    .qr-image { display:inline-block; background:#fff; padding:24px; border-radius:6px; max-width:100%; }
+    .qr-image[hidden] { display:none; }
+    .qr-image canvas, .qr-image img { max-width:100%; height:auto; }
+    .qr-download { display:block; margin:12px auto 0; max-width:260px; }
+    .qr-download:disabled { opacity:.5; cursor:default; }
+    .page-share { margin-top:8px; }
+    .page-share h3 { font-family:'Cinzel',serif; color:var(--accent-gold-light); font-size:1.15rem; }
+    .liq-name { overflow-wrap:anywhere; }
+    .liqueur-item { gap:12px; }
+    .liq-code { flex-shrink:0; }
+    @media (min-width:720px) { body { padding-top:44px; } }
   </style>
 </head>
 <body>
@@ -178,7 +208,7 @@
   <div class="stats" aria-label="Sortimentsstatistik">
     <div><strong id="statChargen">–</strong><span>Chargen</span></div>
   </div>
-  <div class="quote-card" id="dailyQuote">Lade Manufaktur-Spruch...</div>
+  <div class="quote-card"><span class="data-label" style="display:block;font-style:normal;margin-bottom:5px">Spruch des Tages</span><div id="dailyQuote">Lade Manufaktur-Spruch...</div></div>
 
   <div class="card search-card">
     <label for="codeInput">Flaschen-Code eingeben</label>
@@ -199,6 +229,15 @@
     </div>
     <button type="button" class="share-btn" id="shareBtn">Flaschen-Link kopieren</button>
     <p id="shareStatus" role="status"></p>
+    <!-- Der Chargen-QR wird erst bei Bedarf erzeugt und bei Chargenwechsel zurückgesetzt. -->
+    <details class="qr-panel" id="batchQR">
+      <summary>QR-Code dieser Charge</summary>
+      <div class="qr-body">
+        <div class="qr-image" id="batchQRImage" hidden></div>
+        <p id="batchQRStatus" role="status">Direkt zur ausgewählten Charge.</p>
+        <button type="button" class="share-btn qr-download" id="batchQRDownload" disabled>QR-Code als PNG speichern</button>
+      </div>
+    </details>
   </div>
 
   <details class="card system-card">
@@ -218,6 +257,17 @@
       <p style="text-align:center; color: var(--muted); font-size: 0.9rem;">Verbinde mit dem Tresor...</p>
     </div>
   </div>
+  <section class="card page-share" aria-label="Webseite teilen">
+    <h3>Likör-Tresor teilen</h3>
+    <details class="qr-panel" id="siteQR">
+      <summary>QR-Code der Webseite</summary>
+      <div class="qr-body">
+        <div class="qr-image" id="siteQRImage" hidden></div>
+        <p id="siteQRStatus" role="status">Direkt zur Startseite des Tresors.</p>
+        <button type="button" class="share-btn qr-download" id="siteQRDownload" disabled>QR-Code als PNG speichern</button>
+      </div>
+    </details>
+  </section>
 </div>
 
 <script>
@@ -430,6 +480,90 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // Zutaten aus der bestehenden CSV-Zelle als einzelne Elemente darstellen.
+  // Dezimalkommas und Kommas in Klammern bleiben erhalten.
+  function zeigeZutaten(text) {
+    const ziel = document.getElementById("resZutaten");
+    ziel.replaceChildren();
+    if (!text.trim()) { ziel.textContent = "Noch keine Zutaten hinterlegt."; return; }
+    const teile = [];
+    let feld = "", tiefe = 0;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (c === "(") tiefe++;
+      if (c === ")") tiefe = Math.max(0, tiefe - 1);
+      const dezimal = c === "," && /\d/.test(text[i-1] || "") && /\d/.test(text[i+1] || "");
+      if (!tiefe && !dezimal && /[,;\r\n]/.test(c)) {
+        if (feld.trim()) teile.push(feld.trim());
+        feld = "";
+      } else feld += c;
+    }
+    if (feld.trim()) teile.push(feld.trim());
+    if (!teile.length) { ziel.textContent = text; return; }
+    const liste = document.createElement("ul");
+    liste.className = "ingredient-list";
+    teile.forEach(zutat => {
+      const li = document.createElement("li");
+      li.textContent = zutat;
+      liste.appendChild(li);
+    });
+    ziel.appendChild(liste);
+  }
+
+  // Ein gemeinsamer Link-Aufbau für Teilen und QR-Codes; keine Excel-Zusatzspalten.
+  function tresorLink(code) {
+    const url = new URL(location.href);
+    url.search = ""; url.hash = "";
+    if (code) url.searchParams.set("code", code);
+    return url.href;
+  }
+
+  // QR lokal erzeugen und mit weißem Rand als druckfähiges PNG speichern.
+  // Bei nicht verfügbarer Bibliothek bleibt der Direktlink als Alternative sichtbar.
+  function verbindeQR(prefix, link, dateiname) {
+    const details = document.getElementById(prefix);
+    const bild = document.getElementById(prefix + "Image");
+    const status = document.getElementById(prefix + "Status");
+    const download = document.getElementById(prefix + "Download");
+    details.open = false;
+    bild.replaceChildren(); bild.hidden = true; download.disabled = true;
+    status.textContent = link;
+    download.onclick = null;
+    details.ontoggle = () => {
+      if (!details.open || bild.querySelector("canvas")) return;
+      if (typeof QRCode !== "function") {
+        status.textContent = "QR-Code momentan nicht verfügbar. Direktlink: " + link;
+        return;
+      }
+      try {
+        bild.replaceChildren();
+        new QRCode(bild, {text:link, width:256, height:256, colorDark:"#000000", colorLight:"#ffffff", correctLevel:QRCode.CorrectLevel.M});
+        const canvas = bild.querySelector("canvas");
+        if (!canvas) throw new Error("PNG-Ausgabe nicht verfügbar");
+        bild.hidden = false;
+        status.textContent = link;
+        download.disabled = false;
+        download.onclick = () => {
+          const png = document.createElement("canvas");
+          png.width = png.height = 320;
+          const ctx = png.getContext("2d");
+          ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,320,320);
+          ctx.drawImage(canvas,32,32);
+          const a = document.createElement("a");
+          a.href = png.toDataURL("image/png");
+          a.download = dateiname + ".png";
+          a.click();
+        };
+      } catch (err) {
+        bild.replaceChildren(); bild.hidden = true; download.disabled = true;
+        status.textContent = "QR-Code konnte nicht erzeugt werden. Direktlink: " + link;
+        console.warn("QR-Code:", err);
+      }
+    };
+  }
+
+  verbindeQR("siteQR", tresorLink(), "Likoer-Tresor");
+
   function sucheLikoer() {
     const eingabe = document.getElementById("codeInput").value.trim().toUpperCase();
     const resultCard = document.getElementById("resultCard");
@@ -449,13 +583,13 @@
       document.getElementById("resCode").innerText = treffer.code;
       document.getElementById("resName").innerText = treffer.name;
       document.getElementById("resBasis").innerText = treffer.basis || "—";
-      document.getElementById("resZutaten").innerText = treffer.zutaten || "—";
+      zeigeZutaten(treffer.zutaten || "");
       document.getElementById("resDatum").innerText = treffer.datum || "—";
       resultCard.style.display = "block";
+      verbindeQR("batchQR", tresorLink(treffer.code), "Likoer-" + treffer.code.replace(/[^A-Z0-9_-]/g, "_"));
       document.getElementById("shareStatus").textContent = "";
       document.getElementById("shareBtn").onclick = async () => {
-        const link = new URL(location.href);
-        link.search = ""; link.hash = ""; link.searchParams.set("code", treffer.code);
+        const link = new URL(tresorLink(treffer.code));
         try { await navigator.clipboard.writeText(link.href); document.getElementById("shareStatus").textContent = "Link kopiert."; }
         catch { document.getElementById("shareStatus").textContent = link.href; }
       };
