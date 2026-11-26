@@ -204,7 +204,13 @@
   function waehleLikoor(code) {
     document.getElementById("codeInput").value = code;
     sucheLikoer();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Auf kleinen Bildschirmen direkt zur geöffneten Charge statt zum Seitenkopf springen.
+    const karte = document.getElementById("resultCard");
+    if (karte.style.display === "block") {
+      const mobil = window.matchMedia("(max-width:859px)").matches;
+      const ruhig = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      karte.scrollIntoView({block: mobil ? "start" : "nearest", behavior: ruhig ? "auto" : "smooth"});
+    }
   }
 
   // Zutaten aus der bestehenden CSV-Zelle als einzelne Elemente darstellen.
@@ -316,6 +322,8 @@
       zeigeZutaten(treffer.zutaten || "");
       document.getElementById("resDatum").innerText = treffer.datum || "—";
       resultCard.style.display = "block";
+      // Jede neue Auswahl öffnet die Details; der Nutzer kann sie danach wieder einklappen.
+      resultCard.open = true;
       detailEmpty.hidden = true;
       verbindeQR("batchQR", tresorLink(treffer.code), "Likoer-" + treffer.code.replace(/[^A-Z0-9_-]/g, "_"));
       document.getElementById("shareStatus").textContent = "";

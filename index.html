@@ -303,6 +303,26 @@
       button.btn-primary { padding-inline:11px; }
       .qr-image { padding:12px; }
     }
+    /* Feinschliff: kleine Hilfszeile und einklappbare Chargenansicht.
+       Native details/summary-Elemente funktionieren auch per Tastatur. */
+    .card.system-card { padding:0; background:transparent; border-radius:5px; }
+    details.system-card summary { min-height:40px; padding:7px 13px; font-size:.8rem; font-weight:400; color:var(--muted); gap:10px; }
+    details.system-card summary::after { font-size:.9rem; color:var(--accent-gold); }
+    .system-card .system-content { margin:0 13px; padding:7px 0 11px; }
+    .system-card .system-row { font-size:.79rem; }
+    .result-card { scroll-margin-top:14px; }
+    .result-summary { list-style:none; display:flex; align-items:center; justify-content:space-between; gap:14px; cursor:pointer; }
+    .result-summary::-webkit-details-marker { display:none; }
+    .result-heading { min-width:0; }
+    .result-summary .bottle-tag { display:block; margin-bottom:4px; }
+    .result-summary .result-title { display:block; margin:0; }
+    .result-card[open] .result-summary { margin-bottom:17px; }
+    .result-chevron { width:9px; height:9px; border-right:1.5px solid var(--accent-gold); border-bottom:1.5px solid var(--accent-gold); transform:rotate(45deg); flex:none; margin-right:4px; }
+    .result-card[open] .result-chevron { transform:rotate(225deg); }
+    summary:focus-visible { outline:2px solid var(--accent-gold-light); outline-offset:3px; border-radius:3px; }
+    .detail-empty h2 { margin:7px 0; }
+    .empty-rule { margin-top:14px; }
+    @media (min-width:860px) { .detail-empty { min-height:170px; } }
   </style>
 </head>
 <body>
@@ -335,9 +355,15 @@
     <div class="error-msg" id="errorMsg">Dieser Code wurde im Tresor nicht gefunden. Bitte überprüfe die Schreibweise (z. B. WMI-001).</div>
   </div>
 
-  <div class="card result-card" id="resultCard">
-    <span class="bottle-tag" id="resCode"></span>
-    <h2 class="result-title" id="resName"></h2>
+  <!-- Die gesamte Charge lässt sich einklappen; der Kopf bleibt zum erneuten Öffnen sichtbar. -->
+  <details class="card result-card" id="resultCard">
+    <summary class="result-summary">
+      <span class="result-heading">
+        <span class="bottle-tag" id="resCode"></span>
+        <span class="result-title" id="resName"></span>
+      </span>
+      <span class="result-chevron" aria-hidden="true"></span>
+    </summary>
     <div class="data-grid">
       <div class="data-row"><div class="data-label">Alkoholbasis</div><div class="data-value" id="resBasis"></div></div>
       <div class="data-row"><div class="data-label">Zutaten & Auszug</div><div class="data-value" id="resZutaten"></div></div>
@@ -354,7 +380,7 @@
         <button type="button" class="share-btn qr-download" id="batchQRDownload" disabled>QR-Code als PNG speichern</button>
       </div>
     </details>
-  </div>
+  </details>
 
   <div class="card detail-empty" id="detailEmpty">
     <span class="section-kicker">Flaschenregister</span>
@@ -374,7 +400,7 @@
     </div>
   </div>
   <details class="card system-card">
-    <summary>Flaschen-Code Systematik</summary>
+    <summary>Flaschen-Code: Erklärung</summary>
     <div class="system-content">
       <div class="system-row"><span class="sys-key">1. Stelle (z. B. W)</span><span class="sys-val">Alkoholbasis (z. B. W = Wodka)</span></div>
       <div class="system-row"><span class="sys-key">2.–3. Stelle</span><span class="sys-val">Frucht: Einzelfrucht (z. B. <strong>BI</strong> = Birne) oder Kombination (z. B. <strong>HB</strong> = Himbeere & Birne)</span></div>
@@ -421,7 +447,7 @@
   </footer>
 </div>
 
-<script src="./js/tresor.js"></script>
+<script src="./js/tresor.js?v=2"></script>
 
 </body>
 </html>
