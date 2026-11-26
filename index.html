@@ -153,6 +153,18 @@
     .liqueur-item:hover { background: var(--accent-glow); border-color: var(--border-gold); transform: translateX(3px); }
     .liq-code { font-family: monospace; font-weight: 700; color: var(--accent-gold); font-size: 0.95rem; }
     .liq-name { font-size: 0.92rem; color: #fff; text-align: right; }
+    .stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:20px; }
+    .stats > div { background:var(--card-bg); border:1px solid var(--border-gold); border-radius:12px; padding:12px 6px; text-align:center; }
+    .stats strong { display:block; color:var(--accent-gold-light); font-size:1.35rem; }
+    .stats span { color:var(--muted); font-size:.8rem; }
+    #sortenFilter,.share-btn { width:100%; background:var(--card-inner); color:var(--text); border:1px solid var(--border-gold); border-radius:8px; padding:10px; font:inherit; margin-bottom:12px; }
+    .share-btn { margin:18px 0 0; color:var(--accent-gold-light); cursor:pointer; }
+    #shareStatus { font-size:.8rem; overflow-wrap:anywhere; color:var(--muted); }
+    .liqueur-item { width:100%; font:inherit; text-align:left; }
+    button:focus-visible,select:focus-visible { outline:2px solid var(--accent-gold-light); outline-offset:2px; }
+    .input-group input { min-width:0; }
+    @media (max-width:360px) { .header h1 {font-size:1.55rem;} .card {padding:16px;} button.btn-primary {padding:0 12px;} }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after {animation:none!important;transition:none!important;scroll-behavior:auto!important;} }
   </style>
 </head>
 <body>
@@ -164,6 +176,11 @@
     <p>Authentischer Genuss & Transparenz im Flaschen-Tresor</p>
   </header>
 
+  <div class="stats" aria-label="Sortimentsstatistik">
+    <div><strong id="statChargen">–</strong><span>Chargen</span></div>
+    <div><strong id="statSorten">–</strong><span>Sorten</span></div>
+    <div><strong>2026</strong><span>Seit</span></div>
+  </div>
   <div class="quote-card" id="dailyQuote">Lade Manufaktur-Spruch...</div>
 
   <div class="card search-card">
@@ -184,6 +201,8 @@
       <div class="data-row"><div class="data-label">Ansatz / Reifung</div><div class="data-value" id="resDatum"></div></div>
     </div>
     <div class="bottle-spruch" id="resSpruch"></div>
+    <button type="button" class="share-btn" id="shareBtn">Flaschen-Link kopieren</button>
+    <p id="shareStatus" role="status"></p>
   </div>
 
   <details class="card system-card">
@@ -198,6 +217,7 @@
   <div class="card overview-card">
     <h3>📋 Sortiment im Tresor</h3>
     <input type="text" id="filterInput" class="filter-input" placeholder="Nach Sorte oder Code filtern..." oninput="filtriereUebersicht()">
+    <select id="sortenFilter" aria-label="Likörsorte filtern" onchange="filtriereUebersicht()"><option value="">Alle Sorten</option></select>
     <div id="overviewList">
       <p style="text-align:center; color: var(--muted); font-size: 0.9rem;">Verbinde mit dem Tresor...</p>
     </div>
@@ -250,7 +270,7 @@
     "„Heute bin ich wieder sehr nah an der Perfektion gescheitert aber der Likör tröstet mich.“"
   ];
 
-  document.getElementById("dailyQuote").innerText = spruecheDesTages[Math.floor(Math.random() * spruecheDesTages.length)];
+  document.getElementById("dailyQuote").innerText = spruecheDesTages[Math.floor(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()) / 86400000) % spruecheDesTages.length];
   
   // Die Datenbank startet ab jetzt komplett leer (kein Backup mehr)
   let likoerDatenbank = [];
@@ -273,6 +293,44 @@
     `;
   }
 
+  const urlCode = new URLSearchParams(window.location.search).get("code");
+
+  // CSV: Kommas, doppelte Anführungszeichen und Zeilenumbrüche in Feldern
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = "", quoted = false;
+    text = text.replace(/^\uFEFF/, "");
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (c === '"') {
+        if (quoted && text[i + 1] === '"') { field += '"'; i++; }
+        else if (quoted || field === "") quoted = !quoted;
+        else field += c;
+      } else if (!quoted && c === ',') {
+        row.push(field); field = "";
+      } else if (!quoted && (c === '\n' || c === '\r')) {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(field);
+        if (row.some(v => v.trim())) rows.push(row);
+        row = []; field = "";
+      } else field += c;
+    }
+    if (quoted) throw new Error("Ungültiges CSV: nicht geschlossenes Feld");
+    row.push(field);
+    if (row.some(v => v.trim())) rows.push(row);
+    return rows;
+  }
+
+  function aktualisiereStatistik() {
+    document.getElementById("statChargen").textContent = likoerDatenbank.length;
+    document.getElementById("statSorten").textContent = new Set(likoerDatenbank.map(l => l.name.toLowerCase())).size;
+    const select = document.getElementById("sortenFilter");
+    [...new Set(likoerDatenbank.map(l => l.name))].sort((a,b) => a.localeCompare(b,"de")).forEach(name => {
+      const option = document.createElement("option");
+      option.value = name; option.textContent = name; select.appendChild(option);
+    });
+  }
+
   // Live-Abruf der Daten
   if (CSV_URL.startsWith("http")) {
     fetch(CSV_URL)
@@ -281,38 +339,25 @@
         return res.text();
       })
       .then(csvText => {
-        const zeilen = csvText.split(/\r?\n/).filter(z => z.trim() !== "");
-        if (zeilen.length > 1) {
-          zeilen.slice(1).forEach(zeile => {
-            const spalten = [];
-            let inQuotes = false, currentField = "";
-            for (let i = 0; i < zeile.length; i++) {
-              let char = zeile[i];
-              if (char === '"') inQuotes = !inQuotes;
-              else if (char === ',' && !inQuotes) { spalten.push(currentField); currentField = ""; } 
-              else { currentField += char; }
-            }
-            spalten.push(currentField);
-
-            const clean = (val) => (val ? val.replace(/^"|"$/g, "").trim() : "");
-            const code = clean(spalten[0]);
-            const name = clean(spalten[1]);
-            
-            if (code && name) {
-              likoerDatenbank.push({
-                code: code, name: name, basis: clean(spalten[2]),
-                zutaten: clean(spalten[3]), datum: clean(spalten[4]), spruch: clean(spalten[5])
-              });
-            }
-          });
-
-          if (likoerDatenbank.length > 0) {
-            renderUebersicht(likoerDatenbank);
-          } else {
-            zeigeVerbindungsFehler(); // Falls die Tabelle leer ist
-          }
-        } else {
-          zeigeVerbindungsFehler();
+        const zeilen = parseCSV(csvText);
+        const codes = new Set();
+        likoerDatenbank = zeilen.slice(1).flatMap(spalten => {
+          const clean = i => (spalten[i] || "").trim();
+          const code = clean(0).toUpperCase(), name = clean(1);
+          if (!code || !name) return [];
+          if (codes.has(code)) { console.warn("Doppelter Chargencode:", code); return []; }
+          codes.add(code);
+          return [{code, name, basis: clean(2), zutaten: clean(3), datum: clean(4), spruch: clean(5)}];
+        });
+        if (!likoerDatenbank.length) {
+          document.getElementById("overviewList").textContent = "Noch keine Liköre eingetragen.";
+          return;
+        }
+        aktualisiereStatistik();
+        filtriereUebersicht();
+        if (urlCode) {
+          document.getElementById("codeInput").value = urlCode;
+          sucheLikoer();
         }
       })
       .catch(err => {
@@ -347,7 +392,8 @@
       container.appendChild(header);
 
       gruppen[buchstabe].forEach(liq => {
-        const item = document.createElement("div");
+        const item = document.createElement("button");
+        item.type = "button";
         item.className = "liqueur-item";
         item.addEventListener("click", () => waehleLikoor(liq.code));
 
@@ -369,7 +415,7 @@
   function filtriereUebersicht() {
     const query = document.getElementById("filterInput").value.toLowerCase();
     const gefiltert = likoerDatenbank.filter(l => 
-      l.code.toLowerCase().includes(query) || l.name.toLowerCase().includes(query)
+      (l.code.toLowerCase().includes(query) || l.name.toLowerCase().includes(query)) && (!document.getElementById("sortenFilter").value || l.name === document.getElementById("sortenFilter").value)
     );
     renderUebersicht(gefiltert);
   }
@@ -403,6 +449,13 @@
       document.getElementById("resDatum").innerText = treffer.datum || "—";
       document.getElementById("resSpruch").innerText = treffer.spruch || "";
       resultCard.style.display = "block";
+      document.getElementById("shareStatus").textContent = "";
+      document.getElementById("shareBtn").onclick = async () => {
+        const link = new URL(location.href);
+        link.search = ""; link.hash = ""; link.searchParams.set("code", treffer.code);
+        try { await navigator.clipboard.writeText(link.href); document.getElementById("shareStatus").textContent = "Link kopiert."; }
+        catch { document.getElementById("shareStatus").textContent = link.href; }
+      };
     } else {
       resultCard.style.display = "none";
       errorMsg.innerText = "Dieser Code wurde im Tresor nicht gefunden. Bitte überprüfe die Schreibweise (z. B. WMI-001).";
@@ -414,14 +467,6 @@
     if (e.key === "Enter") sucheLikoer();
   });
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const urlCode = urlParams.get("code");
-  if (urlCode) {
-    setTimeout(() => {
-      document.getElementById("codeInput").value = urlCode;
-      sucheLikoer();
-    }, 800);
-  }
 </script>
 
 </body>
