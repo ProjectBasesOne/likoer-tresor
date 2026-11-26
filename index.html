@@ -132,7 +132,6 @@
     .data-row { background: var(--card-inner); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.03); }
     .data-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); font-weight: 600; margin-bottom: 3px; }
     .data-value { font-size: 0.95rem; color: var(--text); }
-    .bottle-spruch { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--border-gold); font-style: italic; color: var(--accent-gold-light); text-align: center; font-size: 0.95rem; }
 
     /* Systematik */
     details.system-card summary { color: var(--accent-gold); font-size: 1.05rem; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
@@ -198,7 +197,6 @@
       <div class="data-row"><div class="data-label">Zutaten & Auszug</div><div class="data-value" id="resZutaten"></div></div>
       <div class="data-row"><div class="data-label">Ansatz / Reifung</div><div class="data-value" id="resDatum"></div></div>
     </div>
-    <div class="bottle-spruch" id="resSpruch"></div>
     <button type="button" class="share-btn" id="shareBtn">Flaschen-Link kopieren</button>
     <p id="shareStatus" role="status"></p>
   </div>
@@ -349,7 +347,9 @@
           if (!code || !name) return [];
           if (codes.has(code)) { console.warn("Doppelter Chargencode:", code); return []; }
           codes.add(code);
-          return [{code, name, basis: clean(2), zutaten: clean(3), datum: clean(4), spruch: clean(5)}];
+          // Öffentliche CSV-Spalten: Code, Name, Alkoholbasis, Zutaten, Ansatzdatum.
+          // Zusätzliche alte Spalten werden ignoriert; Flaschensprüche sind nicht mehr erforderlich.
+          return [{code, name, basis: clean(2), zutaten: clean(3), datum: clean(4)}];
         });
         // Auch eine leere Datenbank soll die tatsächliche Anzahl 0 anzeigen.
         aktualisiereStatistik();
@@ -451,7 +451,6 @@
       document.getElementById("resBasis").innerText = treffer.basis || "—";
       document.getElementById("resZutaten").innerText = treffer.zutaten || "—";
       document.getElementById("resDatum").innerText = treffer.datum || "—";
-      document.getElementById("resSpruch").innerText = treffer.spruch || "";
       resultCard.style.display = "block";
       document.getElementById("shareStatus").textContent = "";
       document.getElementById("shareBtn").onclick = async () => {
