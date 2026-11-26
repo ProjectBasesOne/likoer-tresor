@@ -1,63 +1,67 @@
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjXf2C__O1437EMJ7pt-QIdCzNnaolYBzLOGQ8Chk1mwnuda9y2DW-xWaqRHLNlFVwx9WlXEtZYcIo/pub?gid=1287595683&single=true&output=csv";
 
-  // Eigene kurze Sprüche: trockener Humor rund um Obst, Familie und Handarbeit.
+  // Trinksprüche und acht gekennzeichnete Easter Eggs in täglicher Rotation.
   const spruecheDesTages = [
-    "„Das Rezept ist geheim. Die klebrigen Küchenschränke sind öffentlich.“",
-    "„Andere sammeln Briefmarken. Wir etikettieren Obst.“",
-    "„Wer den Likör ansetzt, hat Geduld. Wer die Küche putzt, hat sie verloren.“",
-    "„Aus der Schnapsidee wurde ein Tabellenblatt. So weit ist es gekommen.“",
-    "„Die Birne ist gefallen. Der Rest war Handarbeit.“",
-    "„Bei uns hat sogar das Obst eine Seriennummer.“",
-    "„Das Rezept stammt aus der Familie. Die Excel-Tabelle leider auch.“",
-    "„Ein Likör braucht Zeit. Ein guter Korken braucht Fingerspitzengefühl.“",
-    "„Die wichtigste Zutat steht nicht auf dem Etikett: die Geduld.“",
-    "„Wir machen keinen Obstsalat. Wir denken langfristig.“",
-    "„Die Quitte hat sich ihren Platz im Tresor hart erarbeitet.“",
-    "„Handgemacht heißt auch: Irgendjemand musste die ganzen Früchte schneiden.“",
-    "„Wer hier nach einem Passwort sucht, hat das Wort Tresor zu ernst genommen.“",
-    "„Die Obstschale war voll. Jetzt ist das Regal voll.“",
-    "„Die Küche ist keine Brennerei. Sag das mal den Nachbarn.“",
-    "„Der Likör reift im Glas. Die Ungeduld reift daneben.“",
-    "„Ein guter Gastgeber kennt seine Gäste. Ein guter Hersteller seine Chargennummern.“",
-    "„Man kann nicht Äpfel mit Birnen vergleichen. Aber man kann sie getrennt ansetzen.“",
-    "„Das war mal ein harmloser Obstkorb.“",
-    "„Für die Wissenschaft: eine saubere Dokumentation. Für die Familie: ein schönes Mitbringsel.“",
-    "„Es gibt keine kleinen Mengen, nur kleine Flaschen.“",
-    "„Das Etikett sitzt schief. Der Inhalt ist davon unbeeindruckt.“",
-    "„Ein Glas mit Schraubverschluss ist auch eine Form von Geduldsprobe.“",
-    "„Die Früchte sind saisonal. Das Abwaschproblem ist ganzjährig.“",
-    "„Die Herstellung ist Handarbeit. Die Inventur ist Büroarbeit.“",
-    "„Beim Ansetzen zählt das Rezept. Beim Abfüllen zählt die ruhige Hand.“",
-    "„Wer sich mit Obst beschäftigt, kommt irgendwann auf den Kern der Sache.“",
-    "„Manche Familien haben ein Kochbuch. Unsere hat ein Chargenregister.“",
-    "„Die Flasche ist ein Unikat. Der Trichter leider nicht – der fehlt schon wieder.“",
-    "„Qualitätskontrolle beginnt mit der Nase. Und endet hoffentlich nicht mit einem klebrigen Tisch.“",
-    "„Das Obst kam aus dem Garten. Die Verwaltung kam aus dem Nichts.“",
-    "„Die eigentliche Kunst ist, dass am Ende alles in die Flasche passt.“",
-    "„Das Rezept wurde mehrfach überarbeitet. Der Abwasch nicht.“",
-    "„Die Natur liefert die Früchte. Den Rest macht die Arbeitsplatte mit.“",
-    "„Der Unterschied zwischen Hobby und Manufaktur? Ein Etikett mit Chargennummer.“",
-    "„Die beste Ernte ist die, für die man nicht selbst auf die Leiter muss.“",
-    "„Die Beeren waren schneller gepflückt als die Etiketten gerade aufgeklebt.“",
-    "„Ein Tresor voller Likör und kein einziger Goldbarren. Prioritäten.“",
-    "„Das Sieb hat mehr Berufserfahrung als mancher Küchenhelfer.“",
-    "„Der Ansatz braucht Wochen. Die Entscheidung für ein Etikett manchmal länger.“",
-    "„Bei der Herstellung wird nichts übers Knie gebrochen. Außer vielleicht ein alter Holzlöffel.“",
-    "„Ein bisschen Frucht, ein bisschen Handwerk, sehr viel Spülmittel.“",
-    "„Das Rezept ist präzise. Die Schätzung, wie lange das dauert, war es nicht.“",
-    "„Selbstgemacht schmeckt nach Arbeit. Zum Glück merkt man den Abwasch nicht.“",
-    "„Die einzige Cloud, die wir in der Küche brauchen, ist der Dampf über dem Spülbecken.“",
-    "„Die Flaschen stehen ordentlich in Reih und Glied. Das gilt nicht für die Küche.“",
-    "„Das Obst ist regional. Die Suche nach dem passenden Deckel ist grenzenlos.“",
-    "„Ein guter Jahrgang beginnt nicht im Kalender, sondern am Obstbaum.“",
-    "„Was lange zieht, wird irgendwann etikettiert.“",
-    "„Der Tresor ist digital. Die klebrigen Finger sind echt.“",
-    "„Es gibt Dinge, die werden mit der Zeit besser. Dazu gehört nicht die Spüle nach dem Abfüllen.“",
-    "„Das Familienrezept hat jetzt eine Versionsgeschichte. Oma hätte Fragen.“",
-    "„Früher hieß es: noch ein Glas Marmelade. Heute heißt es: neue Charge angelegt.“",
-    "„Die Früchte haben ihre Arbeit getan. Jetzt ist der Filter dran.“",
-    "„Wer ordentlich beschriftet, muss später nicht raten.“",
-    "„Eine Schnapsidee mit Inventarnummer ist praktisch schon ein Projekt.“"
+    "„Alles ist vergänglich, nur der Durst bleibt lebenslänglich.“",
+    "„Ich trinke auf eure Gesundheit. Um meine kümmere ich mich morgen.“",
+    "„Wer zuletzt lacht, hat den Trinkspruch nicht verstanden.“",
+    "„Auf die guten alten Zeiten. Die waren früher auch nicht besser.“",
+    "„Auf die Vernunft. Möge sie uns morgen wiedererkennen.“",
+    "🥚 Easter Egg · Thailand: „In Thailand bestellt man mild. Die Chilischote hat davon nichts mitbekommen.“",
+    "„Ich bin für klare Verhältnisse. Trübe Getränke gehen aber auch.“",
+    "„Zum Wohl! Das ist heute meine kürzeste Rede.“",
+    "„Auf die Freundschaft: Die besseren Geschichten bleiben unter uns.“",
+    "„Man soll die Feste feiern, wie sie fallen. Die Gläser allerdings nicht.“",
+    "„Ein Hoch auf alle, die beim Anstoßen noch Augenkontakt schaffen.“",
+    "„Auf die Gesundheit! Ohne sie wäre der ganze Aufwand umsonst.“",
+    "🥚 Easter Egg · Portugal: „In Portugal gibt es zum Kaffee ein Pastel de Nata. Zum zweiten Kaffee natürlich auch.“",
+    "„Das Leben ist ernst genug. Prost.“",
+    "„Auf unsere guten Vorsätze. Schön, dass es sie gibt.“",
+    "„Wer im Glashaus sitzt, sollte vorsichtig anstoßen.“",
+    "„Auf die Menschen, bei denen man nicht erst fragen muss, ob man bleiben darf.“",
+    "„Ich wollte einen tiefgründigen Trinkspruch halten. Aber das Glas ist nicht so tief.“",
+    "„Auf die Zukunft! Die Vergangenheit kennt uns schon.“",
+    "🥚 Easter Egg · Mallorca: „Auf Mallorca heißt es Meerblick. Den Aufpreis sieht man dann auf der Rechnung.“",
+    "„Ein guter Abend braucht keine Tagesordnung.“",
+    "„Prost! Mehr habe ich zu diesem Thema nicht beizutragen.“",
+    "„Auf die kleinen Freuden. Die großen sind meistens teuer.“",
+    "„Wer nichts zu feiern hat, kann wenigstens auf die anderen anstoßen.“",
+    "„Auf die Gäste, die auch beim Abwasch noch gute Freunde sind.“",
+    "„Ich erhebe mein Glas. Für mehr Sport reicht die Motivation heute nicht.“",
+    "🥚 Easter Egg · Türkei: „In der Türkei ist ein Glas Tee keine Bestellung. Es ist der Beginn eines Gesprächs.“",
+    "„Auf den Feierabend. Eine der besseren Erfindungen der Menschheit.“",
+    "„Ein guter Trinkspruch ist wie ein guter Witz: besser kurz als erklärt.“",
+    "„Auf die Zeit, die wir miteinander verbringen, statt auf die Uhr zu schauen.“",
+    "„Ich habe eine Rede vorbereitet. Keine Sorge, sie endet mit Prost.“",
+    "„Auf die Leute, die unsere Geschichten schon kennen und trotzdem lachen.“",
+    "„Das Glas ist halb voll. Die Diskussion darüber ist ganz überflüssig.“",
+    "🥚 Easter Egg · Italien: „In Italien bestellt man nach dem Essen einen Espresso. Über Cappuccino wird nicht verhandelt.“",
+    "„Auf die spontanen Abende, die besser werden als die geplanten.“",
+    "„Wer gute Gesellschaft hat, braucht kein Unterhaltungsprogramm.“",
+    "„Auf die wenigen Dinge im Leben, die man nicht optimieren muss.“",
+    "„Wir sind nicht alt. Wir haben nur mehr Anlässe zum Anstoßen.“",
+    "„Auf die Menschen, die aus einem kurzen Besuch einen schönen Abend machen.“",
+    "„Ein Prost auf alle, die den Witz schon vor der Pointe verstehen.“",
+    "🥚 Easter Egg · Österreich: „In Österreich geht man auf die Alm, um abzuschalten. Der Kaiserschmarrn ist Teil der Therapie.“",
+    "„Auf die Gastgeber. Ohne sie säßen wir jetzt alle daheim.“",
+    "„Die besten Gespräche haben selten ein Protokoll.“",
+    "„Auf die Gelassenheit. Irgendwer muss sie ja behalten.“",
+    "„Ich mag kurze Reden und lange Freundschaften. Prost.“",
+    "„Auf das Glück: Möge es öfter vorbeikommen als der Paketbote.“",
+    "„Wer den Abend genießen kann, hat schon genug erreicht.“",
+    "🥚 Easter Egg · Schweiz: „In der Schweiz ist das Fondue günstiger, wenn man den Preis nicht in Euro umrechnet.“",
+    "„Auf die guten Geschichten. Die schlechten erzählen wir nächstes Mal.“",
+    "„Die Runde ist eröffnet. Weitere Formalitäten entfallen.“",
+    "„Auf die Weisheit des Alters. Wir warten noch auf die Lieferung.“",
+    "„Ein Prosit auf den Humor. Er hat uns schon durch ganz andere Abende gebracht.“",
+    "„Auf die Leute, die auch ohne Anlass gute Laune mitbringen.“",
+    "„Das Geheimnis eines guten Abends? Nicht ständig nach dem Geheimnis fragen.“",
+    "🥚 Easter Egg · 404: „404: Likör nicht gefunden. Das Glas war eben noch voll.“",
+    "„Auf die schönen Zufälle. Die geplanten klappen ohnehin selten.“",
+    "„Ein Glas auf die Freundschaft, ein Lächeln für den Rest.“",
+    "„Auf alle, die beim Wort Feierabend besonders aufmerksam werden.“",
+    "„Ein Toast auf die ehrlichen Menschen. Vor allem auf die, die zugeben, dass sie keinen Trinkspruch kennen.“",
+    "„Auf uns. Eine bessere Gesellschaft finden wir heute sowieso nicht.“"
   ];
 
   document.getElementById("dailyQuote").innerText = spruecheDesTages[Math.floor(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()) / 86400000) % spruecheDesTages.length];
@@ -70,7 +74,7 @@
   // Funktion, die gerufen wird, wenn die Verbindung fehlschlägt
   function zeigeVerbindungsFehler() {
     const offlineSprueche = [
-      "„Gut Ding will Weile haben – genau wie ein guter Tropfen.“",
+      "„Gut Ding will Weile haben. Genau wie ein guter Tropfen.“",
       "„Der Tresor ist gerade im Reifeprozess. Gleich wieder da!“",
       "„Manchmal braucht die Technik so lange wie eine gute Gärung.“"
     ];
@@ -355,9 +359,9 @@
       errorMsg.style.display = "none";
       document.getElementById("resCode").innerText = treffer.code;
       document.getElementById("resName").innerText = treffer.name;
-      document.getElementById("resBasis").innerText = treffer.basis || "—";
+      document.getElementById("resBasis").innerText = treffer.basis || "Nicht angegeben";
       zeigeZutaten(treffer.zutaten || "");
-      document.getElementById("resDatum").innerText = treffer.datum || "—";
+      document.getElementById("resDatum").innerText = treffer.datum || "Nicht angegeben";
       resultCard.style.display = "block";
       // Jede neue Auswahl öffnet die Details; der Nutzer kann sie danach wieder einklappen.
       resultCard.open = true;
