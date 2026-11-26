@@ -222,22 +222,110 @@
     .footer-hint { display:block; font-size:.78rem; font-weight:400; color:var(--muted); margin-top:4px; }
     .project-notes .footer-heading { font-size:1rem; color:var(--accent-gold-light); margin:20px 0 8px; padding-top:14px; border-top:1px solid var(--border-gold); }
     .project-notes .footer-heading:first-child { margin-top:0; padding-top:0; border-top:0; }
+    /* Designvariante: ruhige Hausmanufaktur. Matte warme Töne statt Glanz,
+       keine zusätzlichen Bilder, Schriften oder externen Dienste. */
+    :root {
+      --bg:#171613; --card-bg:#211f1b; --card-inner:#292620;
+      --accent-gold:#c3a471; --accent-gold-light:#dec8a1;
+      --accent-glow:rgba(195,164,113,.08); --text:#eee7dc;
+      --muted:#b9afa0; --border:rgba(222,200,161,.15); --border-gold:rgba(195,164,113,.32);
+    }
+    body { background:var(--bg); padding:22px 16px 30px; line-height:1.6; }
+    .container { max-width:540px; min-width:0; }
+    .header { margin:0 0 24px; padding:24px 0 25px; border-bottom:1px solid var(--border-gold); position:relative; }
+    .header::after { content:""; position:absolute; width:34px; height:3px; bottom:-2px; left:calc(50% - 17px); background:var(--accent-gold); }
+    .brand-subtitle { font-size:.68rem; letter-spacing:2.5px; font-weight:600; margin-bottom:8px; }
+    .header h1 { font-size:clamp(1.55rem,6.6vw,2.4rem); color:var(--text); font-weight:500; letter-spacing:.5px; line-height:1.25; margin-bottom:9px; }
+    .header p { color:var(--muted); font-weight:400; font-size:.92rem; }
+    .intro-strip { display:grid; gap:10px; margin-bottom:18px; }
+    .stats,.quote-card { margin:0; }
+    .stats > div { background:transparent; border:1px solid var(--border); border-radius:5px; padding:10px 15px; }
+    .stats strong { font-family:'Cinzel',serif; font-size:1.35rem; font-weight:600; }
+    .quote-card { background:transparent; border:0; border-left:1px solid var(--border-gold); border-radius:0; box-shadow:none; padding:8px 13px; font-size:.88rem; color:var(--muted); }
+    .quote-card .data-label { font-size:.66rem; letter-spacing:1.2px; }
+    .workspace { display:flex; flex-direction:column; gap:0; }
+    .detail-column,.catalog-column { min-width:0; display:flex; flex-direction:column; gap:14px; }
+    .catalog-column { margin-top:14px; }
+    .card { margin:0; padding:20px; border-radius:7px; border:1px solid var(--border); box-shadow:none; }
+    .search-card label { color:var(--accent-gold-light); font-size:.75rem; letter-spacing:1.2px; }
+    input[type="text"], #sortenFilter { border-radius:5px; background:var(--bg); border:1px solid var(--border); min-height:44px; }
+    input[type="text"]:focus { box-shadow:none; border-color:var(--accent-gold); }
+    button.btn-primary { background:var(--accent-gold); color:#1e1913; border-radius:5px; min-height:44px; font:inherit; font-weight:700; padding:0 17px; }
+    button.btn-primary:hover { transform:none; background:var(--accent-gold-light); }
+    .result-card { background:var(--card-bg); border-color:var(--border-gold); animation:none; }
+    .bottle-tag { background:transparent; border:0; border-radius:0; padding:0 0 3px; letter-spacing:1px; color:var(--accent-gold); }
+    .result-title { color:var(--text); font-size:clamp(1.45rem,5vw,2rem); font-weight:500; overflow-wrap:anywhere; }
+    .data-grid { gap:0; border-top:1px solid var(--border); }
+    .data-row { padding:13px 0; border:0; border-bottom:1px solid var(--border); border-radius:0; background:transparent; }
+    .data-label { font-size:.7rem; letter-spacing:1px; }
+    .ingredient-list { gap:6px; }
+    .ingredient-list li { border:1px solid var(--border); border-radius:4px; background:var(--card-inner); padding:4px 9px; }
+    .share-btn { background:transparent; border-radius:5px; min-height:44px; }
+    .share-btn:hover { background:var(--accent-glow); }
+    .qr-panel { margin-top:14px; border-color:var(--border); }
+    .overview-card h3,.page-share h3 { font-family:'Cinzel',serif; font-weight:500; color:var(--text); font-size:1.25rem; }
+    .group-header { font-size:.7rem; font-weight:600; letter-spacing:1.5px; margin:14px 0 0; padding:6px 0; color:var(--accent-gold); }
+    .liqueur-item { margin:0; padding:13px 5px; background:transparent; border:0; border-bottom:1px solid var(--border); border-radius:0; min-height:46px; }
+    .liqueur-item:hover { transform:none; background:var(--accent-glow); border-color:var(--border); }
+    .liq-code { font-size:.82rem; letter-spacing:.35px; }
+    .liq-name { font-size:.95rem; color:var(--text); }
+    details.system-card summary { font-size:.95rem; color:var(--accent-gold-light); font-weight:600; }
+    .page-share { margin:0; }
+    .project-footer { margin:25px 0 0; border-color:var(--border); }
+    .detail-empty { display:none; }
+    .detail-empty[hidden] { display:none!important; }
+    .section-kicker { color:var(--accent-gold); font-size:.7rem; letter-spacing:1.6px; text-transform:uppercase; }
+    .detail-empty h2 { font-family:'Cinzel',serif; font-size:1.4rem; font-weight:500; margin:12px 0; color:var(--text); }
+    .detail-empty p { color:var(--muted); max-width:32ch; font-size:.95rem; }
+    .empty-rule { display:block; margin-top:25px; width:38px; height:1px; background:var(--accent-gold); }
+
+    /* Desktop nutzt die Breite für zwei funktionale Spalten.
+       Mobile Reihenfolge bleibt: Suche, Ergebnis, Sortiment, Zusatzinfos. */
+    @media (min-width:860px) {
+      body { padding:44px 30px; }
+      .container { max-width:1020px; }
+      .header { padding:25px 0 32px; margin-bottom:24px; }
+      .header h1 { font-size:2.7rem; }
+      .intro-strip { grid-template-columns:minmax(150px, .75fr) minmax(0, 3fr); gap:22px; align-items:center; margin-bottom:25px; }
+      .stats > div { min-height:65px; }
+      .quote-card { padding:10px 20px; }
+      .workspace { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:24px; align-items:start; }
+      .catalog-column { margin:0; }
+      .detail-column,.catalog-column { gap:18px; }
+      .card { padding:25px; }
+      .detail-empty { display:flex; flex-direction:column; justify-content:center; min-height:240px; background:transparent; border-style:dashed; }
+      .project-footer { margin-top:34px; }
+      .project-notes { max-width:760px; margin-inline:auto; }
+    }
+    @media (max-width:380px) {
+      body { padding-inline:12px; }
+      .card { padding:15px; }
+      button.btn-primary { padding-inline:11px; }
+      .qr-image { padding:12px; }
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header class="header">
-    <span class="brand-subtitle">Edle Liköre</span>
-    <h1>LIKÖRMANUFAKTUR</h1>
-    <p>Authentischer Genuss & Transparenz im Flaschen-Tresor</p>
+    <span class="brand-subtitle">Aus eigener Herstellung</span>
+    <h1>Likörmanufaktur</h1>
+    <p>Der private Likör-Tresor</p>
   </header>
 
+  <!-- Kompakte Kopfleiste: auf dem Handy untereinander, am Desktop nebeneinander. -->
+  <div class="intro-strip">
   <div class="stats" aria-label="Sortimentsstatistik">
     <div><strong id="statChargen">–</strong><span>Chargen</span></div>
   </div>
   <div class="quote-card"><span class="data-label" style="display:block;font-style:normal;margin-bottom:5px">Spruch des Tages</span><div id="dailyQuote">Lade Manufaktur-Spruch...</div></div>
 
+  </div>
+
+  <!-- Hauptbereich: Suche und Details links, Sortiment und weitere Informationen rechts. -->
+  <main class="workspace">
+  <div class="detail-column">
   <div class="card search-card">
     <label for="codeInput">Flaschen-Code eingeben</label>
     <div class="input-group">
@@ -268,23 +356,31 @@
     </details>
   </div>
 
-  <details class="card system-card">
-    <summary>📖 Flaschen-Code Systematik</summary>
-    <div class="system-content">
-      <div class="system-row"><span class="sys-key">1. Stelle (z. B. W)</span><span class="sys-val">Alkoholbasis (z. B. W = Wodka)</span></div>
-      <div class="system-row"><span class="sys-key">2.–3. Stelle</span><span class="sys-val">Frucht: Einzelfrucht (z. B. <strong>BI</strong> = Birne) oder Kombination (z. B. <strong>HB</strong> = Himbeere & Birne)</span></div>
-      <div class="system-row"><span class="sys-key">Ziffern (001, 002, ...)</span><span class="sys-val">Fortlaufende Ansatznummer</span></div>
-    </div>
-  </details>
+  <div class="card detail-empty" id="detailEmpty">
+    <span class="section-kicker">Flaschenregister</span>
+    <h2>Eine Charge auswählen</h2>
+    <p>Gib einen Flaschen-Code ein oder wähle einen Likör aus dem Sortiment. Hier findest du die Zutaten, den Ansatz und den passenden QR-Code.</p>
+    <span class="empty-rule" aria-hidden="true"></span>
+  </div>
+  </div>
+  <div class="catalog-column">
 
   <div class="card overview-card">
-    <h3>📋 Sortiment im Tresor</h3>
+    <h3>Sortiment im Tresor</h3>
     <input type="text" id="filterInput" class="filter-input" placeholder="Nach Sorte oder Code filtern...">
     <select id="sortenFilter" aria-label="Likörsorte filtern"><option value="">Alle Sorten</option></select>
     <div id="overviewList">
       <p style="text-align:center; color: var(--muted); font-size: 0.9rem;">Verbinde mit dem Tresor...</p>
     </div>
   </div>
+  <details class="card system-card">
+    <summary>Flaschen-Code Systematik</summary>
+    <div class="system-content">
+      <div class="system-row"><span class="sys-key">1. Stelle (z. B. W)</span><span class="sys-val">Alkoholbasis (z. B. W = Wodka)</span></div>
+      <div class="system-row"><span class="sys-key">2.–3. Stelle</span><span class="sys-val">Frucht: Einzelfrucht (z. B. <strong>BI</strong> = Birne) oder Kombination (z. B. <strong>HB</strong> = Himbeere & Birne)</span></div>
+      <div class="system-row"><span class="sys-key">Ziffern (001, 002, ...)</span><span class="sys-val">Fortlaufende Ansatznummer</span></div>
+    </div>
+  </details>
   <section class="card page-share" aria-label="Webseite teilen">
     <h3>Likör-Tresor teilen</h3>
     <details class="qr-panel" id="siteQR">
@@ -296,6 +392,8 @@
       </div>
     </details>
   </section>
+  </div>
+  </main>
   <!-- Statische Projekthinweise: unabhängig von der Excel-Datenbank. -->
   <footer class="project-footer">
     <!-- Alle Hinweise sind über einen eindeutig beschrifteten, direkt erreichbaren Bereich aufklappbar. -->

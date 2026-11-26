@@ -294,10 +294,13 @@
   function sucheLikoer() {
     const eingabe = document.getElementById("codeInput").value.trim().toUpperCase();
     const resultCard = document.getElementById("resultCard");
+    // Der dezente Platzhalter erscheint nur am Desktop, solange keine Charge angezeigt wird.
+    const detailEmpty = document.getElementById("detailEmpty");
     const errorMsg = document.getElementById("errorMsg");
 
     if (likoerDatenbank.length === 0) {
       resultCard.style.display = "none";
+      detailEmpty.hidden = false;
       errorMsg.innerText = "Das Likör-Register konnte noch nicht geladen werden. Bitte versuche es später.";
       errorMsg.style.display = "block";
       return;
@@ -313,6 +316,7 @@
       zeigeZutaten(treffer.zutaten || "");
       document.getElementById("resDatum").innerText = treffer.datum || "—";
       resultCard.style.display = "block";
+      detailEmpty.hidden = true;
       verbindeQR("batchQR", tresorLink(treffer.code), "Likoer-" + treffer.code.replace(/[^A-Z0-9_-]/g, "_"));
       document.getElementById("shareStatus").textContent = "";
       document.getElementById("shareBtn").onclick = async () => {
@@ -322,6 +326,7 @@
       };
     } else {
       resultCard.style.display = "none";
+      detailEmpty.hidden = false;
       errorMsg.innerText = "Dieser Code wurde im Tresor nicht gefunden. Bitte überprüfe die Schreibweise (z. B. WMI-001).";
       errorMsg.style.display = "block";
     }
