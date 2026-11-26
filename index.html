@@ -7,13 +7,13 @@
   <meta name="robots" content="noindex, nofollow, nosnippet, noimageindex">
   <title>Likörmanufaktur | Flaschen-Tresor</title>
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <!-- QR-Codes werden lokal im Browser berechnet; die Bibliothek ist fest versioniert. -->
-  <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <!-- Schriftarten und QR-Bibliothek werden vom eigenen GitHub-Pages-Hosting geladen.
+       Lizenztexte liegen in fonts/ und js/. Keine externen CDN- oder Font-Aufrufe. -->
+  <script defer src="./js/qrcode.min.js"></script>
   <style>
+    /* Unveränderte variable Originalschriftarten; Gewichte wie bisher im Layout. */
+    @font-face { font-family: 'Cinzel'; src: url('./fonts/cinzel.ttf') format('truetype'); font-style: normal; font-weight: 400 900; font-display: swap; }
+    @font-face { font-family: 'Plus Jakarta Sans'; src: url('./fonts/plus-jakarta-sans.ttf') format('truetype'); font-style: normal; font-weight: 200 800; font-display: swap; }
     :root {
       --bg: #0f1115;
       --card-bg: #181a20;
@@ -307,14 +307,15 @@
         <h3>Hinweise zu den Angaben</h3>
         <p>Die Angaben dienen der privaten Dokumentation. Für ihre Richtigkeit, Vollständigkeit und Aktualität wird keine Gewähr übernommen. Gesetzliche Haftungsansprüche bleiben unberührt.</p>
         <h3>Technische Datenverarbeitung</h3>
-        <p>Die Webseite selbst enthält keine Benutzerkonten, Bewertungsformulare, Werbe- oder Analysefunktionen und setzt nach aktuellem Quellcode keine eigenen Cookies. Beim Aufruf werden jedoch externe Dienste eingebunden, die technische Verbindungsdaten wie IP-Adresse und Browserinformationen verarbeiten können.</p>
+        <p>Die Webseite selbst enthält keine Benutzerkonten, Bewertungsformulare, Werbe- oder Analysefunktionen und setzt nach aktuellem Quellcode keine eigenen Cookies. Beim Aufruf können das Hosting und der Abruf der veröffentlichten Likördaten technische Verbindungsdaten wie IP-Adresse und Browserinformationen verarbeiten.</p>
         <ul>
           <li><strong>GitHub Pages:</strong> Bereitstellung der Webseite und Betriebssicherheit. <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noreferrer">Datenschutzhinweise von GitHub</a></li>
-          <li><strong>Google Sheets:</strong> Abruf der veröffentlichten Likördaten.</li>
-          <li><strong>Google Fonts:</strong> Darstellung der Schriftarten. <a href="https://policies.google.com/privacy?hl=de" rel="noreferrer">Datenschutzhinweise von Google</a></li>
-          <li><strong>jsDelivr:</strong> Bereitstellung der QR-Code-Bibliothek. <a href="https://www.jsdelivr.com/privacy-policy" rel="noreferrer">Datenschutzhinweise von jsDelivr</a></li>
+          <li><strong>Google Sheets:</strong> Abruf der veröffentlichten Likördaten. <a href="https://policies.google.com/privacy?hl=de" rel="noreferrer">Datenschutzhinweise von Google</a></li>
         </ul>
-        <p>QR-Codes werden im Browser erzeugt; ihre Inhalte werden hierzu nicht an einen externen QR-Code-Generator gesendet. Je nach Anbieter können Daten auch außerhalb der EU verarbeitet werden.</p>
+        <p>Schriftarten und die QR-Code-Bibliothek werden direkt vom Webseitenhosting bereitgestellt. Es erfolgen dafür keine Abrufe bei Google Fonts oder jsDelivr. QR-Codes werden im Browser erzeugt; ihre Inhalte werden hierzu nicht an einen externen QR-Code-Generator gesendet. Je nach Anbieter können Daten auch außerhalb der EU verarbeitet werden.</p>
+        <h3>Verwendete Schriftarten und Software</h3>
+        <p>Cinzel und Plus Jakarta Sans: SIL Open Font License 1.1. QRCode.js: MIT-Lizenz.</p>
+        <p><a href="./fonts/Cinzel-OFL.txt">Cinzel-Lizenz</a> · <a href="./fonts/PlusJakartaSans-OFL.txt">Plus Jakarta Sans-Lizenz</a> · <a href="./js/QRCode-LICENSE.txt">QRCode.js-Lizenz</a></p>
         <p>Die Webseite ist öffentlich erreichbar. Die Suchmaschinenindexierung soll durch technische Hinweise eingeschränkt werden; dies ist kein Zugriffsschutz.</p>
       </div>
     </details>
