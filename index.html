@@ -153,7 +153,7 @@
     .liqueur-item:hover { background: var(--accent-glow); border-color: var(--border-gold); transform: translateX(3px); }
     .liq-code { font-family: monospace; font-weight: 700; color: var(--accent-gold); font-size: 0.95rem; }
     .liq-name { font-size: 0.92rem; color: #fff; text-align: right; }
-    .stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:20px; }
+    .stats { display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:20px; }
     .stats > div { background:var(--card-bg); border:1px solid var(--border-gold); border-radius:12px; padding:12px 6px; text-align:center; }
     .stats strong { display:block; color:var(--accent-gold-light); font-size:1.35rem; }
     .stats span { color:var(--muted); font-size:.8rem; }
@@ -178,8 +178,6 @@
 
   <div class="stats" aria-label="Sortimentsstatistik">
     <div><strong id="statChargen">–</strong><span>Chargen</span></div>
-    <div><strong id="statSorten">–</strong><span>Sorten</span></div>
-    <div><strong>2026</strong><span>Seit</span></div>
   </div>
   <div class="quote-card" id="dailyQuote">Lade Manufaktur-Spruch...</div>
 
@@ -321,9 +319,10 @@
     return rows;
   }
 
+  // Chargenzahl aus allen gültigen, eindeutigen Datensätzen berechnen (unabhängig vom Suchfilter).
   function aktualisiereStatistik() {
     document.getElementById("statChargen").textContent = likoerDatenbank.length;
-    document.getElementById("statSorten").textContent = new Set(likoerDatenbank.map(l => l.name.toLowerCase())).size;
+    // Sortenfilter aus den vorhandenen Namen erzeugen; keine manuelle Liste nötig.
     const select = document.getElementById("sortenFilter");
     [...new Set(likoerDatenbank.map(l => l.name))].sort((a,b) => a.localeCompare(b,"de")).forEach(name => {
       const option = document.createElement("option");
@@ -333,13 +332,16 @@
 
   // Live-Abruf der Daten
   if (CSV_URL.startsWith("http")) {
-    fetch(CSV_URL)
+    // Bei jedem Seitenaufruf die veröffentlichte Tabelle neu abrufen, statt den Browser-Cache zu verwenden.
+    // Google kann die Veröffentlichung selbst verzögert aktualisieren.
+    fetch(CSV_URL, { cache: "no-store" })
       .then(res => {
         if (!res.ok) throw new Error("Netzwerkfehler");
         return res.text();
       })
       .then(csvText => {
         const zeilen = parseCSV(csvText);
+        // Doppelte Codes nur einmal zählen; leere Zeilen und Einträge ohne Namen ignorieren.
         const codes = new Set();
         likoerDatenbank = zeilen.slice(1).flatMap(spalten => {
           const clean = i => (spalten[i] || "").trim();
@@ -349,12 +351,14 @@
           codes.add(code);
           return [{code, name, basis: clean(2), zutaten: clean(3), datum: clean(4), spruch: clean(5)}];
         });
+        // Auch eine leere Datenbank soll die tatsächliche Anzahl 0 anzeigen.
+        aktualisiereStatistik();
         if (!likoerDatenbank.length) {
           document.getElementById("overviewList").textContent = "Noch keine Liköre eingetragen.";
           return;
         }
-        aktualisiereStatistik();
         filtriereUebersicht();
+        // Direktlink erst nach dem erfolgreichen Datenimport auswerten.
         if (urlCode) {
           document.getElementById("codeInput").value = urlCode;
           sucheLikoer();
