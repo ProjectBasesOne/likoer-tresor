@@ -47,6 +47,8 @@
   
   // Die Datenbank startet ab jetzt komplett leer (kein Backup mehr)
   let likoerDatenbank = [];
+  // Die Auswahl bleibt auch bei einem erneuten Filtern des Sortiments erhalten.
+  let ausgewaehlterCode = "";
 
   // Funktion, die gerufen wird, wenn die Verbindung fehlschlägt
   function zeigeVerbindungsFehler() {
@@ -176,6 +178,8 @@
         const item = document.createElement("button");
         item.type = "button";
         item.className = "liqueur-item";
+        item.dataset.code = liq.code;
+        item.setAttribute("aria-pressed", String(liq.code === ausgewaehlterCode));
         item.addEventListener("click", () => waehleLikoor(liq.code));
 
         const codeSpan = document.createElement("span");
@@ -297,7 +301,21 @@
 
   verbindeQR("siteQR", tresorLink(), "Likoer-Tresor");
 
+  // Auswahlmarkierung aktualisieren, ohne die Liste neu zu rendern.
+  function markiereCharge(code) {
+    ausgewaehlterCode = code;
+    document.querySelectorAll("#overviewList .liqueur-item").forEach(item => {
+      item.setAttribute("aria-pressed", String(item.dataset.code === code));
+    });
+  }
+
+  function aktualisiereSuchkreuze() {
+    document.getElementById("clearCode").hidden = !document.getElementById("codeInput").value;
+    document.getElementById("clearFilter").hidden = !document.getElementById("filterInput").value;
+  }
+
   function sucheLikoer() {
+    aktualisiereSuchkreuze();
     const eingabe = document.getElementById("codeInput").value.trim().toUpperCase();
     const resultCard = document.getElementById("resultCard");
     // Der dezente Platzhalter erscheint nur am Desktop, solange keine Charge angezeigt wird.
@@ -306,6 +324,7 @@
 
     if (likoerDatenbank.length === 0) {
       resultCard.style.display = "none";
+      markiereCharge("");
       detailEmpty.hidden = false;
       errorMsg.innerText = "Das Likör-Register konnte noch nicht geladen werden. Bitte versuche es später.";
       errorMsg.style.display = "block";
@@ -315,6 +334,7 @@
     const treffer = likoerDatenbank.find(l => l.code.toUpperCase() === eingabe);
 
     if (treffer) {
+      markiereCharge(treffer.code);
       errorMsg.style.display = "none";
       document.getElementById("resCode").innerText = treffer.code;
       document.getElementById("resName").innerText = treffer.name;
@@ -334,6 +354,7 @@
       };
     } else {
       resultCard.style.display = "none";
+      markiereCharge("");
       detailEmpty.hidden = false;
       errorMsg.innerText = "Dieser Code wurde im Tresor nicht gefunden. Bitte überprüfe die Schreibweise (z. B. WMI-001).";
       errorMsg.style.display = "block";
@@ -342,7 +363,31 @@
 
   // Ereignisse im lokalen Skript registrieren, damit die CSP Inline-JavaScript sperren kann.
   document.getElementById("searchBtn").addEventListener("click", sucheLikoer);
-  document.getElementById("filterInput").addEventListener("input", filtriereUebersicht);
+  document.getElementById("filterInput").addEventListener("input", () => {
+    aktualisiereSuchkreuze();
+    filtriereUebersicht();
+  });
+  document.getElementById("codeInput").addEventListener("input", aktualisiereSuchkreuze);
+  // Das X am Chargensuchfeld schließt die Auswahl; das X am Filter setzt nur die Filter zurück.
+  document.getElementById("clearCode").addEventListener("click", () => {
+    const input = document.getElementById("codeInput");
+    input.value = "";
+    document.getElementById("resultCard").style.display = "none";
+    document.getElementById("resultCard").open = false;
+    document.getElementById("detailEmpty").hidden = false;
+    document.getElementById("errorMsg").style.display = "none";
+    markiereCharge("");
+    aktualisiereSuchkreuze();
+    input.focus();
+  });
+  document.getElementById("clearFilter").addEventListener("click", () => {
+    const input = document.getElementById("filterInput");
+    input.value = "";
+    document.getElementById("sortenFilter").value = "";
+    aktualisiereSuchkreuze();
+    filtriereUebersicht();
+    input.focus();
+  });
   document.getElementById("sortenFilter").addEventListener("change", filtriereUebersicht);
   document.getElementById("codeInput").addEventListener("keypress", function(e) {
     if (e.key === "Enter") sucheLikoer();

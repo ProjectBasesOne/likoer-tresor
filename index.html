@@ -323,6 +323,45 @@
     .detail-empty h2 { margin:7px 0; }
     .empty-rule { margin-top:14px; }
     @media (min-width:860px) { .detail-empty { min-height:170px; } }
+    /* Dezente Auswahlmarkierung und platzsparende Bedienung ohne neue Bibliotheken. */
+    .liqueur-item[aria-pressed="true"] { background:var(--accent-glow); box-shadow:inset 2px 0 var(--accent-gold); padding-inline:10px 5px; }
+    .liqueur-item[aria-pressed="true"] .liq-name { color:var(--accent-gold-light); }
+    .clearable-input { position:relative; flex:1; min-width:0; }
+    .clearable-input input { padding-inline:12px 40px; }
+    .clear-input { position:absolute; right:3px; top:3px; width:36px; height:38px; border:0; background:transparent; color:var(--muted); font:inherit; font-size:1.35rem; cursor:pointer; border-radius:4px; }
+    .clear-input[hidden] { display:none; }
+    .clear-input:hover { color:var(--accent-gold-light); background:var(--accent-glow); }
+    .filter-wrap { margin-bottom:12px; }
+    .filter-wrap .filter-input { margin-bottom:0!important; }
+    .card.page-share { padding:0; background:transparent; border-radius:5px; }
+    .page-share .qr-panel { margin:0; padding:0; border:0; }
+    .page-share summary { padding:10px 13px; font-size:.8rem; color:var(--muted); font-weight:400; cursor:pointer; }
+    .page-share .qr-body { padding:0 12px 14px; }
+    .qr-panel { margin-top:10px; padding-top:10px; }
+    .qr-panel summary { font-size:.85rem; }
+    .qr-image { padding:16px; }
+    .qr-image canvas,.qr-image img { width:192px; max-width:100%; height:auto; }
+    .qr-body { margin-top:10px; }
+    .qr-body p { font-size:.75rem; margin:7px 0; }
+    .qr-download { margin-top:8px; font-size:.8rem; }
+    @media (max-width:859px) {
+      body { padding:16px 14px 22px; }
+      .header { padding:17px 0 19px; margin-bottom:17px; }
+      .intro-strip { gap:8px; margin-bottom:13px; }
+      .detail-column,.catalog-column { gap:10px; }
+      .catalog-column { margin-top:10px; }
+      .card:not(.system-card):not(.page-share) { padding:16px; }
+      .result-card[open] .result-summary { margin-bottom:12px; }
+      .data-row { padding:10px 0; }
+      .project-footer { margin-top:19px; }
+      .input-group { gap:7px; }
+    }
+    @media (max-width:380px) {
+      body { padding-inline:10px; }
+      .card:not(.system-card):not(.page-share) { padding:13px; }
+      .clearable-input input { padding-inline:8px 36px; font-size:1rem; letter-spacing:.8px; }
+      button.btn-primary { padding-inline:10px; }
+    }
   </style>
 </head>
 <body>
@@ -349,7 +388,7 @@
   <div class="card search-card">
     <label for="codeInput">Flaschen-Code eingeben</label>
     <div class="input-group">
-      <input type="text" id="codeInput" placeholder="Z. B. WMI-001" autocomplete="off">
+      <div class="clearable-input"><input type="text" id="codeInput" placeholder="Z. B. WMI-001" autocomplete="off"><button type="button" class="clear-input" id="clearCode" aria-label="Flaschen-Code zurücksetzen" hidden>×</button></div>
       <button class="btn-primary" id="searchBtn" type="button">Prüfen</button>
     </div>
     <div class="error-msg" id="errorMsg">Dieser Code wurde im Tresor nicht gefunden. Bitte überprüfe die Schreibweise (z. B. WMI-001).</div>
@@ -393,7 +432,7 @@
 
   <div class="card overview-card">
     <h3>Sortiment im Tresor</h3>
-    <input type="text" id="filterInput" class="filter-input" placeholder="Nach Sorte oder Code filtern...">
+    <div class="clearable-input filter-wrap"><input type="text" id="filterInput" class="filter-input" placeholder="Nach Sorte oder Code filtern..." aria-label="Sortiment durchsuchen"><button type="button" class="clear-input" id="clearFilter" aria-label="Sortimentsfilter zurücksetzen" hidden>×</button></div>
     <select id="sortenFilter" aria-label="Likörsorte filtern"><option value="">Alle Sorten</option></select>
     <div id="overviewList">
       <p style="text-align:center; color: var(--muted); font-size: 0.9rem;">Verbinde mit dem Tresor...</p>
@@ -408,9 +447,8 @@
     </div>
   </details>
   <section class="card page-share" aria-label="Webseite teilen">
-    <h3>Likör-Tresor teilen</h3>
     <details class="qr-panel" id="siteQR">
-      <summary>QR-Code der Webseite</summary>
+      <summary>Likör-Tresor teilen · QR-Code</summary>
       <div class="qr-body">
         <div class="qr-image" id="siteQRImage" hidden></div>
         <p id="siteQRStatus" role="status">Direkt zur Startseite des Tresors.</p>
@@ -447,7 +485,7 @@
   </footer>
 </div>
 
-<script src="./js/tresor.js?v=2"></script>
+<script src="./js/tresor.js?v=3"></script>
 
 </body>
 </html>
