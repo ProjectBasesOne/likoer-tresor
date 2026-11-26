@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Suchmaschinen sollen die private Seite nicht indexieren. Kein Zugriffsschutz; Crawling nicht blockieren. -->
+  <meta name="robots" content="noindex, nofollow, nosnippet, noimageindex">
   <title>Likörmanufaktur | Flaschen-Tresor</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -194,6 +196,18 @@
     .liqueur-item { gap:12px; }
     .liq-code { flex-shrink:0; }
     @media (min-width:720px) { body { padding-top:44px; } }
+    /* Dezenter Fußbereich mit einzeln aufklappbaren Projekt-, Produkt- und Datenschutzhinweisen. */
+    .project-footer { margin:26px 0 8px; padding:16px 4px 0; border-top:1px solid var(--border-gold); color:var(--muted); font-size:.82rem; text-align:center; }
+    .project-footer details { text-align:left; border-bottom:1px solid var(--border); }
+    .project-footer summary { cursor:pointer; color:var(--accent-gold-light); font-weight:600; padding:12px 8px; }
+    .project-footer > p { margin-top:16px; }
+    .project-notes { padding:4px 12px 16px; line-height:1.65; }
+    .project-notes h3 { color:var(--accent-gold-light); font-size:.85rem; margin:14px 0 5px; }
+    .project-notes p + p { margin-top:10px; }
+    .project-notes strong { color:var(--text); }
+    .project-notes ul { padding-left:20px; margin:10px 0; }
+    .project-notes li { margin-bottom:8px; }
+    .project-notes a { color:var(--accent-gold-light); text-decoration:underline; overflow-wrap:anywhere; }
   </style>
 </head>
 <body>
@@ -268,6 +282,44 @@
       </div>
     </details>
   </section>
+  <!-- Statische Projekthinweise: unabhängig von der Excel-Datenbank. -->
+  <footer class="project-footer">
+    <details>
+      <summary>Über dieses Projekt</summary>
+      <div class="project-notes">
+        <p>Der Likör-Tresor ist ein rein privates, nicht kommerzielles Hobbyprojekt zur Dokumentation selbst hergestellter Liköre für Familie und Freunde. Es findet kein gewerblicher Verkauf statt.</p>
+        <h3>Verantwortungsvoller Genuss</h3>
+        <p>Die Liköre enthalten Alkohol und sind ausschließlich für Erwachsene bestimmt. Bitte verantwortungsvoll genießen.</p>
+      </div>
+    </details>
+    <details>
+      <summary>Herstellung &amp; Allergene</summary>
+      <div class="project-notes">
+        <p>Alle Liköre werden in Handarbeit hergestellt. Natürliche Abweichungen in Farbe, Geschmack und Konsistenz sind möglich. Trotz Filterung und Siebung können Fruchtrückstände, Schwebstoffe oder natürliche Ablagerungen enthalten sein. Bei Anzeichen von Verderb nicht verzehren.</p>
+        <h3>Allergene und mögliche Spuren</h3>
+        <p>Durch gemeinsam verwendete Siebe, Filter, Gefäße und Abfüllutensilien können trotz Reinigung auch geringste Rückstände anderer Zutaten oder Allergene aus früheren Chargen enthalten sein. Auch nicht in der Zutatenliste aufgeführte Allergene können daher nicht sicher ausgeschlossen werden.</p>
+        <p><strong>Bei Allergien, Unverträglichkeiten oder Unsicherheiten bitte vorsorglich auf den Verzehr verzichten.</strong></p>
+      </div>
+    </details>
+    <details>
+      <summary>Datenschutz &amp; rechtliche Hinweise</summary>
+      <div class="project-notes">
+        <h3>Hinweise zu den Angaben</h3>
+        <p>Die Angaben dienen der privaten Dokumentation. Für ihre Richtigkeit, Vollständigkeit und Aktualität wird keine Gewähr übernommen. Gesetzliche Haftungsansprüche bleiben unberührt.</p>
+        <h3>Technische Datenverarbeitung</h3>
+        <p>Die Webseite selbst enthält keine Benutzerkonten, Bewertungsformulare, Werbe- oder Analysefunktionen und setzt nach aktuellem Quellcode keine eigenen Cookies. Beim Aufruf werden jedoch externe Dienste eingebunden, die technische Verbindungsdaten wie IP-Adresse und Browserinformationen verarbeiten können.</p>
+        <ul>
+          <li><strong>GitHub Pages:</strong> Bereitstellung der Webseite und Betriebssicherheit. <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noreferrer">Datenschutzhinweise von GitHub</a></li>
+          <li><strong>Google Sheets:</strong> Abruf der veröffentlichten Likördaten.</li>
+          <li><strong>Google Fonts:</strong> Darstellung der Schriftarten. <a href="https://policies.google.com/privacy?hl=de" rel="noreferrer">Datenschutzhinweise von Google</a></li>
+          <li><strong>jsDelivr:</strong> Bereitstellung der QR-Code-Bibliothek. <a href="https://www.jsdelivr.com/privacy-policy" rel="noreferrer">Datenschutzhinweise von jsDelivr</a></li>
+        </ul>
+        <p>QR-Codes werden im Browser erzeugt; ihre Inhalte werden hierzu nicht an einen externen QR-Code-Generator gesendet. Je nach Anbieter können Daten auch außerhalb der EU verarbeitet werden.</p>
+        <p>Die Webseite ist öffentlich erreichbar. Die Suchmaschinenindexierung soll durch technische Hinweise eingeschränkt werden; dies ist kein Zugriffsschutz.</p>
+      </div>
+    </details>
+    <p>Likör-Tresor · Privates, nicht kommerzielles Hobbyprojekt</p>
+  </footer>
 </div>
 
 <script>
