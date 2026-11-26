@@ -7,7 +7,7 @@
     "„Wer zuletzt lacht, hat den Trinkspruch nicht verstanden.“",
     "„Auf die guten alten Zeiten. Die waren früher auch nicht besser.“",
     "„Auf die Vernunft. Möge sie uns morgen wiedererkennen.“",
-    "🥚 Easter Egg · TH · Thailand: „In Thailand bestellt man mild und dazu ein Chang. Das Bier ist kalt, der Mund sieht das anders.“",
+    "🥚 Easter Egg · TH · Thailand: „In Thailand bestellt man mild. Nach dem ersten Bissen versteht man, warum das Chang eiskalt serviert wird.“",
     "„Ich bin für klare Verhältnisse. Trübe Getränke gehen aber auch.“",
     "„Zum Wohl! Das ist heute meine kürzeste Rede.“",
     "„Auf die Freundschaft: Die besseren Geschichten bleiben unter uns.“",
@@ -23,7 +23,7 @@
     "„Auf die Zukunft! Die Vergangenheit kennt uns schon.“",
     "„Ein guter Abend braucht keine Tagesordnung.“",
     "„Prost! Mehr habe ich zu diesem Thema nicht beizutragen.“",
-    "🥚 Easter Egg · ES · Mallorca: „Auf Mallorca bestellt man Hierbas und Meerblick. Den Meerblick erkennt man spätestens an der Rechnung.“",
+    "🥚 Easter Egg · ES · Mallorca: „Auf Mallorca heißt es Meerblick. Den Aufpreis sieht man dann auf der Rechnung.“",
     "„Auf die kleinen Freuden. Die großen sind meistens teuer.“",
     "„Wer nichts zu feiern hat, kann wenigstens auf die anderen anstoßen.“",
     "„Auf die Gäste, die auch beim Abwasch noch gute Freunde sind.“",
@@ -55,7 +55,7 @@
     "„Ein Prosit auf den Humor. Er hat uns schon durch ganz andere Abende gebracht.“",
     "„Auf die Leute, die auch ohne Anlass gute Laune mitbringen.“",
     "„Das Geheimnis eines guten Abends? Nicht ständig nach dem Geheimnis fragen.“",
-    "🥚 Easter Egg · CH · Schweiz: „In der Schweiz passt Kirsch zum Fondue. Richtig warm wird einem beim Blick auf die Rechnung.“",
+    "🥚 Easter Egg · CH · Schweiz: „In der Schweiz gibt es Kirsch zum Fondue. Sogar beim Anstoßen bleibt man neutral.“",
     "„Auf die schönen Zufälle. Die geplanten klappen ohnehin selten.“",
     "„Ein Glas auf die Freundschaft, ein Lächeln für den Rest.“",
     "„Auf alle, die beim Wort Feierabend besonders aufmerksam werden.“",
@@ -63,7 +63,7 @@
     "„Auf uns. Eine bessere Gesellschaft finden wir heute sowieso nicht.“",
     "„Ich wollte heute besonders vernünftig sein. Hat sich zeitlich nicht ergeben.“",
     "„Auf die schlechten Entscheidungen, die wenigstens gute Geschichten ergeben.“",
-    "🥚 Easter Egg · 404: „Error 404: Likör nicht gefunden. Bitte Glas überprüfen. Nachfüllen ist kein technischer Support.“",
+    "🥚 Easter Egg · 404: „Error 404: Likör nicht gefunden. Das Glas ist leer. Ein Neustart hat leider nichts gebracht.“",
     "„Ich bin nicht nachtragend. Ich merke mir nur, wer beim Anstoßen fehlt.“",
     "„Auf die Leute, bei denen aus fünf Minuten ein ganzer Abend wird.“",
     "„Das Leben ist kein Wunschkonzert. Zum Glück darf man trotzdem mitsingen.“",
@@ -72,7 +72,19 @@
     "„Auf die Runde. Die nächste Rede hält bitte jemand anderes.“"
   ];
 
-  document.getElementById("dailyQuote").innerText = spruecheDesTages[Math.floor(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()) / 86400000) % spruecheDesTages.length];
+  // Besondere Sprüche erhalten eine goldene Titelzeile, normale Sprüche bleiben unverändert.
+  const tagesSpruch = spruecheDesTages[Math.floor(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()) / 86400000) % spruecheDesTages.length];
+  const spruchAnzeige = document.getElementById("dailyQuote");
+  const easterEgg = tagesSpruch.match(/^🥚 Easter Egg · ([A-Z]{2}|404)(?: · [^:]+)?: (.+)$/u);
+  if (easterEgg) {
+    const titel = document.createElement("span");
+    titel.className = "data-label";
+    titel.style.cssText = "display:block;font-style:normal;margin-bottom:5px;color:var(--accent-gold-light)";
+    titel.textContent = easterEgg[1] + " · 🥚 EASTER EGG";
+    spruchAnzeige.replaceChildren(titel, document.createTextNode(easterEgg[2]));
+  } else {
+    spruchAnzeige.textContent = tagesSpruch;
+  }
   
   // Die Datenbank startet ab jetzt komplett leer (kein Backup mehr)
   let likoerDatenbank = [];
