@@ -1,6 +1,6 @@
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjXf2C__O1437EMJ7pt-QIdCzNnaolYBzLOGQ8Chk1mwnuda9y2DW-xWaqRHLNlFVwx9WlXEtZYcIo/pub?gid=1287595683&single=true&output=csv";
 
-  // Trinksprüche und acht gekennzeichnete Easter Eggs in täglicher Rotation.
+  // Trinksprüche und neun gekennzeichnete Easter Eggs in täglicher Rotation.
   const spruecheDesTages = [
     "„Alles ist vergänglich, nur der Durst bleibt lebenslänglich.“",
     "„Ich trinke auf eure Gesundheit. Um meine kümmere ich mich morgen.“",
@@ -23,7 +23,7 @@
     "„Auf die Zukunft! Die Vergangenheit kennt uns schon.“",
     "„Ein guter Abend braucht keine Tagesordnung.“",
     "„Prost! Mehr habe ich zu diesem Thema nicht beizutragen.“",
-    "🥚 Easter Egg · ES · Mallorca: „Auf Mallorca braucht man am Ballermann kein Spanisch. Nicht einmal besonders gutes Deutsch.“",
+    "🥚 Easter Egg · ES · Spanien: „In Spanien spricht man Spanisch. Am Ballermann reicht auch gebrochenes Deutsch.“",
     "„Auf die kleinen Freuden. Die großen sind meistens teuer.“",
     "„Wer nichts zu feiern hat, kann wenigstens auf die anderen anstoßen.“",
     "„Auf die Gäste, die auch beim Abwasch noch gute Freunde sind.“",
@@ -69,6 +69,7 @@
     "„Das Leben ist kein Wunschkonzert. Zum Glück darf man trotzdem mitsingen.“",
     "„Auf den freien Sonntag. Möge der Montag seinen Termin vergessen.“",
     "„Mein Humor ist trocken. Mein Glas muss es nicht sein.“",
+    "🥚 Easter Egg · DE · Deutschland: „In Deutschland nimmt man das Handwerk ernst. Zum Glück auch das Brauen, Backen und Brennen.“",
     "„Auf die Runde. Die nächste Rede hält bitte jemand anderes.“"
   ];
 
