@@ -208,6 +208,14 @@
     .project-notes ul { padding-left:20px; margin:10px 0; }
     .project-notes li { margin-bottom:8px; }
     .project-notes a { color:var(--accent-gold-light); text-decoration:underline; overflow-wrap:anywhere; }
+    /* Ein gemeinsamer Fußbereich statt mehrerer einzelner Menüpunkte. */
+    .project-info > summary { text-align:center; list-style:none; }
+    .project-info > summary::-webkit-details-marker { display:none; }
+    .project-info > summary::after { content:" ▾"; display:inline-block; margin-top:4px; }
+    .project-info[open] > summary::after { transform:rotate(180deg); }
+    .footer-hint { display:block; font-size:.78rem; font-weight:400; color:var(--muted); margin-top:4px; }
+    .project-notes .footer-heading { font-size:1rem; color:var(--accent-gold-light); margin:20px 0 8px; padding-top:14px; border-top:1px solid var(--border-gold); }
+    .project-notes .footer-heading:first-child { margin-top:0; padding-top:0; border-top:0; }
   </style>
 </head>
 <body>
@@ -284,26 +292,23 @@
   </section>
   <!-- Statische Projekthinweise: unabhängig von der Excel-Datenbank. -->
   <footer class="project-footer">
-    <details>
-      <summary>Über dieses Projekt</summary>
+    <!-- Alle Hinweise sind über einen eindeutig beschrifteten, direkt erreichbaren Bereich aufklappbar. -->
+    <details class="project-info">
+      <summary>Likör-Tresor · Privates, nicht kommerzielles Hobbyprojekt <span class="footer-hint">Projektinfos, Allergene, Datenschutz &amp; rechtliche Hinweise</span></summary>
       <div class="project-notes">
+        <h2 class="footer-heading">Über dieses Projekt</h2>
+
         <p>Der Likör-Tresor ist ein rein privates, nicht kommerzielles Hobbyprojekt zur Dokumentation selbst hergestellter Liköre für Familie und Freunde. Es findet kein gewerblicher Verkauf statt.</p>
         <h3>Verantwortungsvoller Genuss</h3>
         <p>Die Liköre enthalten Alkohol und sind ausschließlich für Erwachsene bestimmt. Bitte verantwortungsvoll genießen.</p>
-      </div>
-    </details>
-    <details>
-      <summary>Herstellung &amp; Allergene</summary>
-      <div class="project-notes">
+        <h2 class="footer-heading">Herstellung &amp; Allergene</h2>
+
         <p>Alle Liköre werden in Handarbeit hergestellt. Natürliche Abweichungen in Farbe, Geschmack und Konsistenz sind möglich. Trotz Filterung und Siebung können Fruchtrückstände, Schwebstoffe oder natürliche Ablagerungen enthalten sein. Bei Anzeichen von Verderb nicht verzehren.</p>
         <h3>Allergene und mögliche Spuren</h3>
         <p>Durch gemeinsam verwendete Siebe, Filter, Gefäße und Abfüllutensilien können trotz Reinigung auch geringste Rückstände anderer Zutaten oder Allergene aus früheren Chargen enthalten sein. Auch nicht in der Zutatenliste aufgeführte Allergene können daher nicht sicher ausgeschlossen werden.</p>
         <p><strong>Bei Allergien, Unverträglichkeiten oder Unsicherheiten bitte vorsorglich auf den Verzehr verzichten.</strong></p>
-      </div>
-    </details>
-    <details>
-      <summary>Datenschutz &amp; rechtliche Hinweise</summary>
-      <div class="project-notes">
+        <h2 class="footer-heading">Datenschutz &amp; rechtliche Hinweise</h2>
+
         <h3>Hinweise zu den Angaben</h3>
         <p>Die Angaben dienen der privaten Dokumentation. Für ihre Richtigkeit, Vollständigkeit und Aktualität wird keine Gewähr übernommen. Gesetzliche Haftungsansprüche bleiben unberührt.</p>
         <h3>Technische Datenverarbeitung</h3>
@@ -319,7 +324,6 @@
         <p>Die Webseite ist öffentlich erreichbar. Die Suchmaschinenindexierung soll durch technische Hinweise eingeschränkt werden; dies ist kein Zugriffsschutz.</p>
       </div>
     </details>
-    <p>Likör-Tresor · Privates, nicht kommerzielles Hobbyprojekt</p>
   </footer>
 </div>
 
